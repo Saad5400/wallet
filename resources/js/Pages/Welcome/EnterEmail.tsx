@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import Layout from '@/Pages/Welcome/Layout';
+import Layout from '@/Pages/Welcome/WelcomeLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 import { Label } from '@/components/ui/label';
@@ -7,11 +7,11 @@ import { Input } from '@/components/ui/input';
 import { FormEventHandler, useEffect } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 
-export default function Page() {
+export default function Page({ email = '' }) {
     const [emailContainer] = useAutoAnimate()
 
     const { data, setData, post, processing, clearErrors, errors, reset, isDirty } = useForm({
-        email: '',
+        email: email,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -19,14 +19,7 @@ export default function Page() {
 
         if (processing) return;
 
-        post(route('welcome.email.request'), {
-            onStart: () => {
-
-            },
-            onFinish: () => {
-
-            },
-        });
+        post(route('welcome.requestOtp'));
     };
 
     useEffect(clearErrors, [isDirty]);
@@ -35,9 +28,7 @@ export default function Page() {
         <Layout>
             <Head title="هلا" />
             <form className='contents' onSubmit={submit}>
-                <h5 className='text-center'>
-                    الدخول
-                </h5>
+                <Icon icon='line-md:email' className='size-32' />
 
                 <div ref={emailContainer} className='flex flex-col gap-2'>
                     <Label htmlFor='email' className='self-start'>
@@ -46,8 +37,8 @@ export default function Page() {
                     <Input
                         id='email'
                         name='email'
-                        // type='email'
-                        // required
+                        type='email'
+                        required
                         dir='ltr'
                         placeholder='example@xyz.com'
                         value={data.email}

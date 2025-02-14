@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import Layout from '@/Pages/Welcome/Layout';
+import Layout from '@/Pages/Welcome/WelcomeLayout';
 import { Head, Link } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 
@@ -16,7 +16,7 @@ function WelcomePage() {
             </p>
             <img src='/images/hero.svg' alt='محفظتنا' />
             <Button asChild size={'wide'}>
-                <Link href={route('welcome.email')}>
+                <Link href={route('welcome.enterEmail')}>
                     ابدأ الآن
                     <Icon icon='line-md:log-in' className='size-4' />
                 </Link>

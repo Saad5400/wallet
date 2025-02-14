@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import DefaultLayout from '@/Pages/Layout';
+import DefaultLayout from '@/Pages/MainLayout';
 
 export default function WelcomeLayout({ children }: PropsWithChildren) {
     return (

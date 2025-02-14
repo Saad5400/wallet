@@ -10,8 +10,10 @@ use Inertia\Inertia;
 Route::get('/', fn() => Auth::guest() ? redirect('welcome') : redirect('dashboard'));
 
 Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
-Route::get('/welcome/email', [WelcomeController::class, 'email'])->name('welcome.email');
-Route::post('/welcome/email', [WelcomeController::class, 'requestOtp'])->name('welcome.email.request');
+Route::get('/welcome/email', [WelcomeController::class, 'email'])->name('welcome.enterEmail');
+Route::post('/welcome/email', [WelcomeController::class, 'requestOtp'])->name('welcome.requestOtp')->middleware('throttle:5,10'); // 5 attempts in 10 minutes
+Route::get('/welcome/email/otp', [WelcomeController::class, 'enterOtp'])->name('welcome.enterOtp');
+Route::post('/welcome/email/otp', [WelcomeController::class, 'validateOtp'])->name('welcome.validateOtp');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
