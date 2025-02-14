@@ -6,7 +6,7 @@ use App\Http\Requests\RequestOtpRequest;
 use App\Jobs\SendEmailJob;
 use App\Mail\OtpEmail;
 use Inertia\Inertia;
-use OTP;
+use Otp;
 
 class WelcomeController extends Controller
 {
@@ -25,7 +25,7 @@ class WelcomeController extends Controller
         $data = $request->validated();
         $email = $data['email'];
 
-        $otp = OTP::generate($email);
+        $otp = Otp::generate($email);
         dispatch(new SendEmailJob($email, new OtpEmail($otp)));
 
         return redirect()->route('welcome.emai.verify');

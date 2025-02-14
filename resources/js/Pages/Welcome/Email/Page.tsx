@@ -4,15 +4,17 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useEffect } from 'react';
 
 export default function Page() {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, clearErrors, errors, reset, isDirty } = useForm({
         email: '',
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (processing) return;
 
         post(route('welcome.email.request'), {
             onStart: () => {
@@ -23,6 +25,8 @@ export default function Page() {
             },
         });
     };
+
+    useEffect(clearErrors, [isDirty]);
 
     return (
         <Layout>
@@ -40,7 +44,8 @@ export default function Page() {
                         id='email'
                         name='email'
                         type='email'
-                        dir='ltr'
+                        // required
+                        // dir='ltr'
                         placeholder='example@xyz.com'
                         className='placeholder:text-muted'
                         value={data.email}
@@ -50,9 +55,15 @@ export default function Page() {
                 </div>
 
                 <div className='flex flex-col items-start'>
-                    <Button size={'wide'}>
-                        إرسال رمز التحقق
-                        <Icon icon='line-md:telegram' className='size-4' />
+                    <Button size={'wide'} disabled={processing}>
+                        {processing ?
+                            <Icon icon='line-md:loading-twotone-loop' className='size-4' />
+                            :
+                            <>
+                                إرسال رمز التحقق
+                                <Icon icon='line-md:telegram' className='size-4' />
+                            </>
+                        }
                     </Button>
                     <Button asChild variant={'link'}>
                         <Link className='flex flex-row items-center gap-2' href={route('welcome')}>
