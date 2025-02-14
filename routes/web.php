@@ -11,7 +11,7 @@ Route::get('/', fn() => Auth::guest() ? redirect('welcome') : redirect('dashboar
 
 Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/welcome/email', [WelcomeController::class, 'email'])->name('welcome.email');
-Route::post('/welcome/email/request', [WelcomeController::class, 'requestOtp'])->name('welcome.email.request');
+Route::post('/welcome/email', [WelcomeController::class, 'requestOtp'])->name('welcome.email.request');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
