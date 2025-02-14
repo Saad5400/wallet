@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import Layout from '@/Pages/Welcome/Layout';
 
-export default function Guest({ children }: PropsWithChildren) {
+export default function Default({ children }: PropsWithChildren) {
     return (
         <Layout>
             {children}

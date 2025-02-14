@@ -3,7 +3,7 @@ import Layout from '@/Pages/Welcome/Email/Layout';
 import { Head, Link } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 
-export default function Welcome() {
+export default function Default() {
     return (
         <Layout>
             <Head title="هلا" />
