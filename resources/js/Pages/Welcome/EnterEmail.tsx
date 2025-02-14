@@ -23,10 +23,7 @@ export default function Page({ email = '' }) {
         post(route('welcome.requestOtp'));
     };
 
-    useEffect(() => {
-        clearErrors();
-        console.log('isDirty', isDirty);
-    }, [isDirty]);
+    useEffect(clearErrors, [isDirty]);
 
     return (
         <Layout>
@@ -41,8 +38,8 @@ export default function Page({ email = '' }) {
                         style={{ viewTransitionName: 'welcome-email-input' }}
                         id='email'
                         name='email'
-                        // type='email'
-                        // required
+                        type='email'
+                        required
                         dir='ltr'
                         placeholder='example@xyz.com'
                         value={data.email}

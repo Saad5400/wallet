@@ -70,6 +70,9 @@ class WelcomeController extends Controller
 
     public function completeProfile()
     {
+        if (Auth::user()->name)
+            return redirect()->route('dashboard');
+
         return Inertia::render('Welcome/CompleteProfile');
     }
 

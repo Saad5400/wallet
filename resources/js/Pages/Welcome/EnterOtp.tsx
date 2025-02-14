@@ -33,10 +33,10 @@ export default function Page({ email = '' }) {
 
     return (
         <Layout>
-            <Head title="هلا" />
+            <Head title="رمز التحقق" />
             <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
-                <p className='text-muted' style={{ viewTransitionName: 'welcome-otp-info' }}>
+                <p className='text-muted' style={{ viewTransitionName: 'welcome-info' }}>
                     تم إرسال رمز التحقق إلى <span className='text-foreground'>{email}</span>
                 </p>
                 <div ref={otpContainer} className='flex flex-col gap-2'>
@@ -47,9 +47,11 @@ export default function Page({ email = '' }) {
                         <InputOTP
                             className='w-full'
                             maxLength={6}
+                            minLength={6}
                             id='otp'
                             name='otp'
                             value={data.otp}
+                            required
                             onChange={(e) => setData('otp', e)}
                         >
                             <InputOTPGroup className='w-full'>

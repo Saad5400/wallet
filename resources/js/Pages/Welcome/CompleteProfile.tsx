@@ -6,18 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { FormEventHandler, useEffect } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSeparator,
-    InputOTPSlot,
-} from "@/components/ui/input-otp"
+import WelcomeLogo from './WelcomeLogo';
 
-export default function Page({ email = '' }) {
-    const [otpContainer] = useAutoAnimate()
+export default function Page() {
+    const [nameContainer] = useAutoAnimate()
 
     const { data, setData, post, processing, clearErrors, errors, reset, isDirty } = useForm({
-        otp: '',
+        name: '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -25,66 +20,47 @@ export default function Page({ email = '' }) {
 
         if (processing) return;
 
-        post(route('welcome.validateOtp'));
+        post(route('welcome.saveProfile'));
     };
 
-    useEffect(clearErrors, [isDirty]);
+    useEffect(() => {
+        clearErrors();
+    }, [isDirty]);
 
     return (
         <Layout>
-            <Head title="هلا" />
+            <Head title="اكمال الحساب" />
+            <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
-                <Icon icon='line-md:email-alert' className='size-32' />
-
-                <p className='text-muted'>
-                    تم إرسال رمز التحقق إلى <span className='text-foreground'>{email}</span>
+                <p className='text-muted' style={{ viewTransitionName: 'welcome-info' }}>
+                    آخر شيء، نحتاج نكمل معلومات حسابك
                 </p>
-                <div ref={otpContainer} className='flex flex-col gap-2'>
-                    <Label htmlFor='otp' className='self-start'>
-                        رمز التحقق
+                <div ref={nameContainer} className='flex flex-col gap-2'>
+                    <Label htmlFor='name' className='self-start' style={{ viewTransitionName: 'welcome-email-label' }}>
+                        الاسم
                     </Label>
-                    <div dir='ltr' className='w-80'>
-                        <InputOTP
-                            className='w-full'
-                            maxLength={6}
-                            id='otp'
-                            name='otp'
-                            value={data.otp}
-                            onChange={(e) => setData('otp', e)}
-                        >
-                            <InputOTPGroup className='w-full'>
-                                <InputOTPSlot index={0} className='w-full' />
-                                <InputOTPSlot index={1} className='w-full' />
-                                <InputOTPSlot index={2} className='w-full' />
-                            </InputOTPGroup>
-                            <InputOTPSeparator />
-                            <InputOTPGroup className='w-full'>
-                                <InputOTPSlot index={3} className='w-full' />
-                                <InputOTPSlot index={4} className='w-full' />
-                                <InputOTPSlot index={5} className='w-full' />
-                            </InputOTPGroup>
-                        </InputOTP>
-                    </div>
-                    {errors.otp && <small className='self-end text-destructive'>{errors.otp}</small>}
+                    <Input
+                        style={{ viewTransitionName: 'welcome-email-input' }}
+                        id='name'
+                        name='name'
+                        required
+                        placeholder='اسم المستخدم العلني'
+                        value={data.name}
+                        onChange={e => setData('name', e.target.value)}
+                    />
+                    {errors.name && <small className='self-end text-destructive'>{errors.name}</small>}
                 </div>
 
-
                 <div className='flex flex-col items-start'>
-                    <Button size={'wide'} disabled={processing}>
+                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }}>
                         {processing ?
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                             :
                             <>
-                                تأكيد الرمز
-                                <Icon icon='line-md:security' className='size-4' />
+                                حفظ
+                                <Icon icon='line-md:cloud-alt-upload' className='size-4' />
                             </>
                         }
-                    </Button>
-                    <Button asChild variant={'link'}>
-                        <Link className='flex flex-row items-center gap-2' href={route('welcome.enterEmail')}>
-                            <Icon icon='line-md:log-out' className='size-4' />
-                            تعديل البريد الإلكتروني
-                        </Link>
                     </Button>
                 </div>
             </form>
