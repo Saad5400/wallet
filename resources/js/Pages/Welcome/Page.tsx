@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import Layout from '@/Pages/Welcome/Layout';
 import { Head, Link } from '@inertiajs/react';
+import { Icon } from "@iconify/react";
 
 export default function Welcome() {
     return (
@@ -17,6 +18,7 @@ export default function Welcome() {
             <Button asChild size={'wide'}>
                 <Link href={route('welcome.email')}>
                     ابدأ الآن
+                    <Icon icon='line-md:log-in' className='size-4' />
                 </Link>
             </Button>
             <small className='px-8 text-center text-muted'>
