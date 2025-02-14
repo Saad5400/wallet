@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Welcome;
 
-use Auth;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
-class ValidateOtpRequest extends FormRequest
+class RequestOtpRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,7 @@ class ValidateOtpRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'otp' => ['required', 'numeric', 'digits:6'],
+            'email' => ['required', 'email'],
         ];
     }
 }

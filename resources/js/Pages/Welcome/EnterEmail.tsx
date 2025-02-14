@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { FormEventHandler, useEffect } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import WelcomeLogo from './WelcomeLogo';
 
 export default function Page({ email = '' }) {
     const [emailContainer] = useAutoAnimate()
@@ -27,9 +28,8 @@ export default function Page({ email = '' }) {
     return (
         <Layout>
             <Head title="هلا" />
+            <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
-                <Icon icon='line-md:email' className='size-32' />
-
                 <div ref={emailContainer} className='flex flex-col gap-2'>
                     <Label htmlFor='email' className='self-start'>
                         البريد الإلكتروني

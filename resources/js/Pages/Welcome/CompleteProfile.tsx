@@ -12,7 +12,6 @@ import {
     InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/ui/input-otp"
-import WelcomeLogo from './WelcomeLogo';
 
 export default function Page({ email = '' }) {
     const [otpContainer] = useAutoAnimate()
@@ -34,8 +33,9 @@ export default function Page({ email = '' }) {
     return (
         <Layout>
             <Head title="هلا" />
-            <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
+                <Icon icon='line-md:email-alert' className='size-32' />
+
                 <p className='text-muted'>
                     تم إرسال رمز التحقق إلى <span className='text-foreground'>{email}</span>
                 </p>

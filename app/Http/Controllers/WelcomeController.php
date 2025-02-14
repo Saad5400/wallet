@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RequestOtpRequest;
-use App\Http\Requests\ValidateOtpRequest;
+use App\Http\Requests\Welcome\RequestOtpRequest;
+use App\Http\Requests\Welcome\SaveProfileRequest;
+use App\Http\Requests\Welcome\ValidateOtpRequest;
 use App\Jobs\SendEmailJob;
 use App\Mail\OtpEmail;
 use App\Models\User;
@@ -63,6 +64,20 @@ class WelcomeController extends Controller
 
         if ($user->wasRecentlyCreated)
             return redirect()->route('welcome.completeProfile');
+
+        return redirect()->route('dashboard');
+    }
+
+    public function completeProfile()
+    {
+        return Inertia::render('Welcome/CompleteProfile');
+    }
+
+    public function saveProfile(SaveProfileRequest $request)
+    {
+        $data = $request->validated();
+        $user = Auth::user();
+        $user->update($data);
 
         return redirect()->route('dashboard');
     }

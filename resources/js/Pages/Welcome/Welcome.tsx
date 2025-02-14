@@ -2,12 +2,13 @@ import { Button } from '@/components/ui/button';
 import Layout from '@/Pages/Welcome/WelcomeLayout';
 import { Head, Link } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
+import WelcomeLogo from './WelcomeLogo';
 
 function WelcomePage() {
     return (
         <>
             <Head title="هلا" />
-            <img src='/favicon.webp' className='rounded-4xl size-32' />
+            <WelcomeLogo />
             <h4>
                 محفظتنا
             </h4>
