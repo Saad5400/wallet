@@ -1,19 +1,33 @@
 import { Button } from '@/components/ui/button';
-import Layout from '@/Pages/Welcome/Email/Layout';
+import Layout from '@/Pages/Welcome/Layout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { FormEventHandler } from 'react';
 
-export default function Default() {
+export default function Page() {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
     });
 
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+
+        post(route('welcome.email.request'), {
+            onStart: () => {
+
+            },
+            onFinish: () => {
+
+            },
+        });
+    };
+
     return (
         <Layout>
             <Head title="هلا" />
-            <form className='contents'>
+            <form className='contents' onSubmit={submit}>
                 <h5 className='text-center'>
                     الدخول
                 </h5>

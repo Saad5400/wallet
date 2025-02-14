@@ -3,9 +3,9 @@ import Layout from '@/Pages/Welcome/Layout';
 import { Head, Link } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 
-export default function Default() {
+function WelcomePage() {
     return (
-        <Layout>
+        <>
             <Head title="هلا" />
             <img src='/favicon.webp' className='rounded-4xl size-32' />
             <h4>
@@ -24,6 +24,10 @@ export default function Default() {
             <small className='px-8 text-center text-muted'>
                 بالضغط على الزر أعلاه، أنت توافق على <span className='text-foreground'>شروط الاستخدام</span> و<span className='text-foreground'>سياسة الخصوصية</span>
             </small>
-        </Layout>
+        </>
     );
 }
+
+WelcomePage.layout = (page: any) => <Layout children={page} />
+
+export default WelcomePage;

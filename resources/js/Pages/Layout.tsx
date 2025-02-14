@@ -1,21 +1,33 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { router } from "@inertiajs/react";
-import { cn } from '@/lib/utils';
+import React, { useEffect } from 'react';
+import { router } from '@inertiajs/react';
 
-export default function Default({ children }: PropsWithChildren) {
-
-    const [loading, setLoading] = useState(false)
-
+export default function DefaultLayout({ children }: { children: React.ReactNode }) {
     useEffect(() => {
-        router.on('start', () => setLoading(true))
-        router.on('finish', () => setLoading(false))
-    }, [])
+        if (!document.startViewTransition) return;
 
-    const transitionClass = useMemo(() => (loading ? 'fade-out' : 'fade-in'), [loading])
+        // When a navigation is triggered...
+        const handleNavigate = () => {
+            // Start a view transition
+            document.startViewTransition(async () => {
+                // Wait until the navigation is complete by listening to the 'finish' event.
+                await new Promise<void>((resolve) => {
+                    // `router.on` returns an "off" function we can call to unsubscribe.
+                    const offFinish = router.on('finish', () => {
+                        offFinish(); // Unsubscribe so we don't leak listeners
+                        resolve();
+                    });
+                });
+            });
+        };
 
-    return (
-        <div className={cn(transitionClass)}>
-            {children}
-        </div>
-    );
+        // Listen for Inertia navigation events.
+        const offNavigate = router.on('start', handleNavigate);
+
+        // Cleanup on unmount.
+        return () => {
+            offNavigate();
+        };
+    }, []);
+
+    return <>{children}</>;
 }
