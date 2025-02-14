@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-});
+Route::get('/', fn() => Auth::guest() ? redirect('welcome') : redirect('dashboard'));
+
+Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
+    Route::get('/welcome/email', [WelcomeController::class, 'email'])->name('welcome.email');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -19,4 +22,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
