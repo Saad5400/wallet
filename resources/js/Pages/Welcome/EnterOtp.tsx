@@ -36,14 +36,14 @@ export default function Page({ email = '' }) {
             <Head title="هلا" />
             <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
-                <p className='text-muted'>
+                <p className='text-muted' style={{ viewTransitionName: 'welcome-otp-info' }}>
                     تم إرسال رمز التحقق إلى <span className='text-foreground'>{email}</span>
                 </p>
                 <div ref={otpContainer} className='flex flex-col gap-2'>
-                    <Label htmlFor='otp' className='self-start'>
+                    <Label htmlFor='otp' className='self-start' style={{ viewTransitionName: 'welcome-email-label' }}>
                         رمز التحقق
                     </Label>
-                    <div dir='ltr' className='w-80'>
+                    <div dir='ltr' className='w-80' style={{ viewTransitionName: 'welcome-email-input' }}>
                         <InputOTP
                             className='w-full'
                             maxLength={6}
@@ -70,7 +70,7 @@ export default function Page({ email = '' }) {
 
 
                 <div className='flex flex-col items-start'>
-                    <Button size={'wide'} disabled={processing}>
+                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }}>
                         {processing ?
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                             :
@@ -81,7 +81,7 @@ export default function Page({ email = '' }) {
                         }
                     </Button>
                     <Button asChild variant={'link'}>
-                        <Link className='flex flex-row items-center gap-2' href={route('welcome.enterEmail')}>
+                        <Link className='flex flex-row items-center gap-2' href={route('welcome.enterEmail')} style={{ viewTransitionName: 'welcome-back-button' }}>
                             <Icon icon='line-md:log-out' className='size-4' />
                             تعديل البريد الإلكتروني
                         </Link>

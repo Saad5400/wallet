@@ -7,19 +7,19 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
 
         // When a navigation is triggered...
         const handleNavigate = (e: CustomEvent) => {
-            // Check if we're navigating to a new page
-            if (e.detail.visit.method === 'get')
-                // Start a view transition
-                document.startViewTransition(async () => {
-                    // Wait until the navigation is complete by listening to the 'finish' event.
-                    await new Promise<void>((resolve) => {
-                        // `router.on` returns an "off" function we can call to unsubscribe.
-                        const offFinish = router.on('finish', () => {
+
+            // Start the view transition.
+            document.startViewTransition(async () => {
+                await new Promise<void>((resolve, reject) => {
+                    const offFinish = router.on('finish', (e) => {
+                        // Delay is required
+                        setTimeout(() => {
                             offFinish(); // Unsubscribe so we don't leak listeners
                             resolve();
-                        });
+                        }, 10);
                     });
                 });
+            });
         };
 
         // Listen for Inertia navigation events.

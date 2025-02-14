@@ -4,9 +4,9 @@ import { Head, Link } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 import WelcomeLogo from './WelcomeLogo';
 
-function WelcomePage() {
+export default function WelcomePage() {
     return (
-        <>
+        <Layout>
             <Head title="هلا" />
             <WelcomeLogo />
             <h4>
@@ -25,10 +25,6 @@ function WelcomePage() {
             <small className='px-8 text-center text-muted'>
                 بالضغط على الزر أعلاه، أنت توافق على <span className='text-foreground'>شروط الاستخدام</span> و<span className='text-foreground'>سياسة الخصوصية</span>
             </small>
-        </>
+        </Layout>
     );
 }
-
-WelcomePage.layout = (page: any) => <Layout children={page} />
-
-export default WelcomePage;

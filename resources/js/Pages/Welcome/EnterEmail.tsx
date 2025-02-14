@@ -23,22 +23,26 @@ export default function Page({ email = '' }) {
         post(route('welcome.requestOtp'));
     };
 
-    useEffect(clearErrors, [isDirty]);
+    useEffect(() => {
+        clearErrors();
+        console.log('isDirty', isDirty);
+    }, [isDirty]);
 
     return (
         <Layout>
-            <Head title="هلا" />
+            <Head title="الدخول" />
             <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
                 <div ref={emailContainer} className='flex flex-col gap-2'>
-                    <Label htmlFor='email' className='self-start'>
+                    <Label htmlFor='email' className='self-start' style={{ viewTransitionName: 'welcome-email-label' }}>
                         البريد الإلكتروني
                     </Label>
                     <Input
+                        style={{ viewTransitionName: 'welcome-email-input' }}
                         id='email'
                         name='email'
-                        type='email'
-                        required
+                        // type='email'
+                        // required
                         dir='ltr'
                         placeholder='example@xyz.com'
                         value={data.email}
@@ -48,7 +52,7 @@ export default function Page({ email = '' }) {
                 </div>
 
                 <div className='flex flex-col items-start'>
-                    <Button size={'wide'} disabled={processing}>
+                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }}>
                         {processing ?
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                             :
@@ -58,7 +62,7 @@ export default function Page({ email = '' }) {
                             </>
                         }
                     </Button>
-                    <Button asChild variant={'link'}>
+                    <Button asChild variant={'link'} style={{ viewTransitionName: 'welcome-back-button' }}>
                         <Link className='flex flex-row items-center gap-2' href={route('welcome')}>
                             <Icon icon='line-md:log-out' className='size-4' />
                             الرجوع
