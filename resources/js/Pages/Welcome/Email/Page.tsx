@@ -5,8 +5,11 @@ import { Icon } from "@iconify/react";
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { FormEventHandler, useEffect } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 export default function Page() {
+    const [emailContainer] = useAutoAnimate()
+
     const { data, setData, post, processing, clearErrors, errors, reset, isDirty } = useForm({
         email: '',
     });
@@ -36,18 +39,17 @@ export default function Page() {
                     الدخول
                 </h5>
 
-                <div className='flex flex-col gap-2'>
+                <div ref={emailContainer} className='flex flex-col gap-2'>
                     <Label htmlFor='email' className='self-start'>
                         البريد الإلكتروني
                     </Label>
                     <Input
                         id='email'
                         name='email'
-                        type='email'
+                        // type='email'
                         // required
-                        // dir='ltr'
+                        dir='ltr'
                         placeholder='example@xyz.com'
-                        className='placeholder:text-muted'
                         value={data.email}
                         onChange={e => setData('email', e.target.value)}
                     />
