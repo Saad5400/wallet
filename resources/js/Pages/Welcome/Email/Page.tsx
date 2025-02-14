@@ -38,8 +38,9 @@ export default function Default() {
                 <div className='flex flex-col items-start'>
                     <Button size={'wide'}>
                         إرسال رمز التحقق
+                        <Icon icon='line-md:telegram' className='size-4' />
                     </Button>
-                    <Button variant={'link'}>
+                    <Button asChild variant={'link'}>
                         <Link className='flex flex-row items-center gap-2' href={route('welcome')}>
                             <Icon icon='line-md:log-out' className='size-4' />
                             الرجوع
