@@ -1,17 +1,16 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WelcomeController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\Guest;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/login', fn() => redirect('welcome'))->name('login');
-Route::get('/', fn() => Auth::guest() ? redirect('welcome') : redirect('dashboard'));
+Route::get('/', [WelcomeController::class, 'root']);
+Route::get('/login', fn() => redirect()->route('welcome.index'));
 
 Route::group([
-    'middleware' => 'guest',
+    'middleware' => [
+        Guest::class,
+    ],
     'as' => 'welcome.',
     'prefix' => 'welcome',
 ], function () {
@@ -29,14 +28,4 @@ Route::group([
 ], function () {
     Route::get('/profile', [WelcomeController::class, 'completeProfile'])->name('completeProfile');
     Route::post('/profile', [WelcomeController::class, 'saveProfile'])->name('saveProfile');
-});
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

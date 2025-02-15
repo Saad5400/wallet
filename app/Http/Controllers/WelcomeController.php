@@ -7,6 +7,7 @@ use App\Http\Requests\Welcome\SaveProfileRequest;
 use App\Http\Requests\Welcome\ValidateOtpRequest;
 use App\Jobs\SendEmailJob;
 use App\Mail\OtpEmail;
+use App\Models\Tenant;
 use App\Models\User;
 use Auth;
 use Illuminate\Auth\Events\Lockout;
@@ -27,6 +28,19 @@ use RateLimiter;
  */
 class WelcomeController extends Controller
 {
+    /**
+     * Redirect the user to the appropriate page.
+     *
+     * If the user is authenticated, they are redirected to the home page.
+     * Otherwise, they are redirected to the welcome page.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function root()
+    {
+        return homeRedirect();
+    }
+
     /**
      * Display the welcome page.
      *
@@ -167,11 +181,18 @@ class WelcomeController extends Controller
         // If the user was just created, trigger the Registered event and redirect to profile completion.
         if ($user->wasRecentlyCreated) {
             event(new Registered($user));
+
+            $tenant = Tenant::create([
+                'name' => 'عائلتي',
+            ]);
+
+            $user->tenants()->attach($tenant->id);
+
             return redirect()->route('welcome.completeProfile');
         }
 
         // For existing users, redirect directly to the dashboard.
-        return redirect()->route('dashboard');
+        return homeRedirect();
     }
 
     /**
@@ -184,8 +205,9 @@ class WelcomeController extends Controller
     public function completeProfile()
     {
         // If the authenticated user already has a name, assume the profile is complete.
-        if (Auth::user()->name) {
-            return redirect()->route('dashboard');
+        $user = Auth::user();
+        if ($user->name) {
+            return homeRedirect();
         }
 
         // Render the profile completion page.
@@ -211,6 +233,6 @@ class WelcomeController extends Controller
         $user->update($data);
 
         // Redirect the user to the dashboard after successfully saving the profile.
-        return redirect()->route('dashboard');
+        return homeRedirect($user);
     }
 }

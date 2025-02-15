@@ -11,6 +11,8 @@
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "predis/predis": "^2.3",
+        "stancl/tenancy": "^3.8",
         "teckwei1993/laravel-otp": "^1.0",
         "tightenco/ziggy": "^2.0"
     },
@@ -30,7 +32,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/utils.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

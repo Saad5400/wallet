@@ -5082,7 +5082,7 @@ namespace Illuminate\Support\Facades {
          */
         public static function lock($name, $seconds = 0, $owner = null)
         {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
+            /** @var \Illuminate\Cache\RedisStore $instance */
             return $instance->lock($name, $seconds, $owner);
         }
 
@@ -5096,21 +5096,8 @@ namespace Illuminate\Support\Facades {
          */
         public static function restoreLock($name, $owner)
         {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
+            /** @var \Illuminate\Cache\RedisStore $instance */
             return $instance->restoreLock($name, $owner);
-        }
-
-        /**
-         * Remove an item from the cache if it is expired.
-         *
-         * @param string $key
-         * @return bool 
-         * @static 
-         */
-        public static function forgetIfExpired($key)
-        {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
-            return $instance->forgetIfExpired($key);
         }
 
         /**
@@ -5121,33 +5108,82 @@ namespace Illuminate\Support\Facades {
          */
         public static function flush()
         {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
+            /** @var \Illuminate\Cache\RedisStore $instance */
             return $instance->flush();
         }
 
         /**
-         * Get the underlying database connection.
+         * Remove all expired tag set entries.
          *
-         * @return \Illuminate\Database\MariaDbConnection 
+         * @return void 
          * @static 
          */
-        public static function getConnection()
+        public static function flushStaleTags()
         {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
-            return $instance->getConnection();
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            $instance->flushStaleTags();
+        }
+
+        /**
+         * Get the Redis connection instance.
+         *
+         * @return \Illuminate\Redis\Connections\Connection 
+         * @static 
+         */
+        public static function connection()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->connection();
+        }
+
+        /**
+         * Get the Redis connection instance that should be used to manage locks.
+         *
+         * @return \Illuminate\Redis\Connections\Connection 
+         * @static 
+         */
+        public static function lockConnection()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->lockConnection();
+        }
+
+        /**
+         * Specify the name of the connection that should be used to store data.
+         *
+         * @param string $connection
+         * @return void 
+         * @static 
+         */
+        public static function setConnection($connection)
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            $instance->setConnection($connection);
         }
 
         /**
          * Specify the name of the connection that should be used to manage locks.
          *
-         * @param \Illuminate\Database\ConnectionInterface $connection
-         * @return \Illuminate\Cache\DatabaseStore 
+         * @param string $connection
+         * @return \Illuminate\Cache\RedisStore 
          * @static 
          */
         public static function setLockConnection($connection)
         {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
+            /** @var \Illuminate\Cache\RedisStore $instance */
             return $instance->setLockConnection($connection);
+        }
+
+        /**
+         * Get the Redis database instance.
+         *
+         * @return \Illuminate\Contracts\Redis\Factory 
+         * @static 
+         */
+        public static function getRedis()
+        {
+            /** @var \Illuminate\Cache\RedisStore $instance */
+            return $instance->getRedis();
         }
 
         /**
@@ -5158,7 +5194,7 @@ namespace Illuminate\Support\Facades {
          */
         public static function getPrefix()
         {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
+            /** @var \Illuminate\Cache\RedisStore $instance */
             return $instance->getPrefix();
         }
 
@@ -5171,7 +5207,7 @@ namespace Illuminate\Support\Facades {
          */
         public static function setPrefix($prefix)
         {
-            /** @var \Illuminate\Cache\DatabaseStore $instance */
+            /** @var \Illuminate\Cache\RedisStore $instance */
             $instance->setPrefix($prefix);
         }
 
@@ -12845,47 +12881,45 @@ namespace Illuminate\Support\Facades {
         }
 
         /**
-         * Release a reserved job back onto the queue after (n) seconds.
+         * Migrate the delayed jobs that are ready to the regular queue.
          *
-         * @param string $queue
-         * @param \Illuminate\Queue\Jobs\DatabaseJobRecord $job
-         * @param int $delay
-         * @return mixed 
+         * @param string $from
+         * @param string $to
+         * @return array 
          * @static 
          */
-        public static function release($queue, $job, $delay)
+        public static function migrateExpiredJobs($from, $to)
         {
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
-            return $instance->release($queue, $job, $delay);
+            /** @var \Illuminate\Queue\RedisQueue $instance */
+            return $instance->migrateExpiredJobs($from, $to);
         }
 
         /**
          * Delete a reserved job from the queue.
          *
          * @param string $queue
-         * @param string $id
+         * @param \Illuminate\Queue\Jobs\RedisJob $job
          * @return void 
-         * @throws \Throwable
          * @static 
          */
-        public static function deleteReserved($queue, $id)
+        public static function deleteReserved($queue, $job)
         {
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
-            $instance->deleteReserved($queue, $id);
+            /** @var \Illuminate\Queue\RedisQueue $instance */
+            $instance->deleteReserved($queue, $job);
         }
 
         /**
          * Delete a reserved job from the reserved queue and release it.
          *
          * @param string $queue
-         * @param \Illuminate\Queue\Jobs\DatabaseJob $job
+         * @param \Illuminate\Queue\Jobs\RedisJob $job
          * @param int $delay
          * @return void 
          * @static 
          */
         public static function deleteAndRelease($queue, $job, $delay)
         {
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             $instance->deleteAndRelease($queue, $job, $delay);
         }
 
@@ -12898,7 +12932,7 @@ namespace Illuminate\Support\Facades {
          */
         public static function clear($queue)
         {
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             return $instance->clear($queue);
         }
 
@@ -12911,20 +12945,32 @@ namespace Illuminate\Support\Facades {
          */
         public static function getQueue($queue)
         {
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             return $instance->getQueue($queue);
         }
 
         /**
-         * Get the underlying database instance.
+         * Get the connection for the queue.
          *
-         * @return \Illuminate\Database\Connection 
+         * @return \Illuminate\Redis\Connections\Connection 
          * @static 
          */
-        public static function getDatabase()
+        public static function getConnection()
         {
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
-            return $instance->getDatabase();
+            /** @var \Illuminate\Queue\RedisQueue $instance */
+            return $instance->getConnection();
+        }
+
+        /**
+         * Get the underlying Redis instance.
+         *
+         * @return \Illuminate\Contracts\Redis\Factory 
+         * @static 
+         */
+        public static function getRedis()
+        {
+            /** @var \Illuminate\Queue\RedisQueue $instance */
+            return $instance->getRedis();
         }
 
         /**
@@ -12937,7 +12983,7 @@ namespace Illuminate\Support\Facades {
         public static function getJobTries($job)
         {
             //Method inherited from \Illuminate\Queue\Queue 
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             return $instance->getJobTries($job);
         }
 
@@ -12951,7 +12997,7 @@ namespace Illuminate\Support\Facades {
         public static function getJobBackoff($job)
         {
             //Method inherited from \Illuminate\Queue\Queue 
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             return $instance->getJobBackoff($job);
         }
 
@@ -12965,7 +13011,7 @@ namespace Illuminate\Support\Facades {
         public static function getJobExpiration($job)
         {
             //Method inherited from \Illuminate\Queue\Queue 
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             return $instance->getJobExpiration($job);
         }
 
@@ -12979,7 +13025,7 @@ namespace Illuminate\Support\Facades {
         public static function createPayloadUsing($callback)
         {
             //Method inherited from \Illuminate\Queue\Queue 
-            \Illuminate\Queue\DatabaseQueue::createPayloadUsing($callback);
+            \Illuminate\Queue\RedisQueue::createPayloadUsing($callback);
         }
 
         /**
@@ -12991,7 +13037,7 @@ namespace Illuminate\Support\Facades {
         public static function getContainer()
         {
             //Method inherited from \Illuminate\Queue\Queue 
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             return $instance->getContainer();
         }
 
@@ -13005,7 +13051,7 @@ namespace Illuminate\Support\Facades {
         public static function setContainer($container)
         {
             //Method inherited from \Illuminate\Queue\Queue 
-            /** @var \Illuminate\Queue\DatabaseQueue $instance */
+            /** @var \Illuminate\Queue\RedisQueue $instance */
             $instance->setContainer($container);
         }
 
@@ -22425,6 +22471,330 @@ namespace Illuminate\Support\Facades {
             }
     }
 
+namespace Stancl\Tenancy\Facades {
+    /**
+     * 
+     *
+     */
+    class Tenancy {
+        /**
+         * Initializes the tenant.
+         *
+         * @param \Stancl\Tenancy\Contracts\Tenant|int|string $tenant
+         * @return void 
+         * @static 
+         */
+        public static function initialize($tenant)
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            $instance->initialize($tenant);
+        }
+
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function end()
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            return $instance->end();
+        }
+
+        /**
+         * 
+         *
+         * @return \Stancl\Tenancy\Contracts\TenancyBootstrapper[] 
+         * @static 
+         */
+        public static function getBootstrappers()
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            return $instance->getBootstrappers();
+        }
+
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function query()
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            return $instance->query();
+        }
+
+        /**
+         * 
+         *
+         * @return \Stancl\Tenancy\Contracts\Tenant|\Illuminate\Database\Eloquent\Model 
+         * @static 
+         */
+        public static function model()
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            return $instance->model();
+        }
+
+        /**
+         * 
+         *
+         * @static 
+         */
+        public static function find($id)
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            return $instance->find($id);
+        }
+
+        /**
+         * Run a callback in the central context.
+         * 
+         * Atomic, safely reverts to previous context.
+         *
+         * @param callable $callback
+         * @return mixed 
+         * @static 
+         */
+        public static function central($callback)
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            return $instance->central($callback);
+        }
+
+        /**
+         * Run a callback for multiple tenants.
+         * 
+         * More performant than running $tenant->run() one by one.
+         *
+         * @param \Stancl\Tenancy\Contracts\Tenant[]|\Traversable|string[]|null $tenants
+         * @param callable $callback
+         * @return void 
+         * @static 
+         */
+        public static function runForMultiple($tenants, $callback)
+        {
+            /** @var \Stancl\Tenancy\Tenancy $instance */
+            $instance->runForMultiple($tenants, $callback);
+        }
+
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @param-closure-this static  $macro
+         * @return void 
+         * @static 
+         */
+        public static function macro($name, $macro)
+        {
+            \Stancl\Tenancy\Tenancy::macro($name, $macro);
+        }
+
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void 
+         * @throws \ReflectionException
+         * @static 
+         */
+        public static function mixin($mixin, $replace = true)
+        {
+            \Stancl\Tenancy\Tenancy::mixin($mixin, $replace);
+        }
+
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool 
+         * @static 
+         */
+        public static function hasMacro($name)
+        {
+            return \Stancl\Tenancy\Tenancy::hasMacro($name);
+        }
+
+        /**
+         * Flush the existing macros.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function flushMacros()
+        {
+            \Stancl\Tenancy\Tenancy::flushMacros();
+        }
+
+            }
+    /**
+     * 
+     *
+     */
+    class GlobalCache {
+        /**
+         * Get a cache store instance by name, wrapped in a repository.
+         *
+         * @param string|null $name
+         * @return \Illuminate\Contracts\Cache\Repository 
+         * @static 
+         */
+        public static function store($name = null)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->store($name);
+        }
+
+        /**
+         * Get a cache driver instance.
+         *
+         * @param string|null $driver
+         * @return \Illuminate\Contracts\Cache\Repository 
+         * @static 
+         */
+        public static function driver($driver = null)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->driver($driver);
+        }
+
+        /**
+         * Resolve the given store.
+         *
+         * @param string $name
+         * @return \Illuminate\Contracts\Cache\Repository 
+         * @throws \InvalidArgumentException
+         * @static 
+         */
+        public static function resolve($name)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->resolve($name);
+        }
+
+        /**
+         * Build a cache repository with the given configuration.
+         *
+         * @param array $config
+         * @return \Illuminate\Cache\Repository 
+         * @static 
+         */
+        public static function build($config)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->build($config);
+        }
+
+        /**
+         * Create a new cache repository with the given implementation.
+         *
+         * @param \Illuminate\Contracts\Cache\Store $store
+         * @param array $config
+         * @return \Illuminate\Cache\Repository 
+         * @static 
+         */
+        public static function repository($store, $config = [])
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->repository($store, $config);
+        }
+
+        /**
+         * Re-set the event dispatcher on all resolved cache repositories.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function refreshEventDispatcher()
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            $instance->refreshEventDispatcher();
+        }
+
+        /**
+         * Get the default cache driver name.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getDefaultDriver()
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->getDefaultDriver();
+        }
+
+        /**
+         * Set the default cache driver name.
+         *
+         * @param string $name
+         * @return void 
+         * @static 
+         */
+        public static function setDefaultDriver($name)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            $instance->setDefaultDriver($name);
+        }
+
+        /**
+         * Unset the given driver instances.
+         *
+         * @param array|string|null $name
+         * @return \Illuminate\Cache\CacheManager 
+         * @static 
+         */
+        public static function forgetDriver($name = null)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->forgetDriver($name);
+        }
+
+        /**
+         * Disconnect the given driver and remove from local cache.
+         *
+         * @param string|null $name
+         * @return void 
+         * @static 
+         */
+        public static function purge($name = null)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            $instance->purge($name);
+        }
+
+        /**
+         * Register a custom driver creator Closure.
+         *
+         * @param string $driver
+         * @param \Closure $callback
+         * @return \Illuminate\Cache\CacheManager 
+         * @static 
+         */
+        public static function extend($driver, $callback)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->extend($driver, $callback);
+        }
+
+        /**
+         * Set the application instance used by the manager.
+         *
+         * @param \Illuminate\Contracts\Foundation\Application $app
+         * @return \Illuminate\Cache\CacheManager 
+         * @static 
+         */
+        public static function setApplication($app)
+        {
+            /** @var \Illuminate\Cache\CacheManager $instance */
+            return $instance->setApplication($app);
+        }
+
+            }
+    }
+
 namespace Teckwei1993\Otp {
     /**
      * 
@@ -27258,6 +27628,8 @@ namespace  {
     class Validator extends \Illuminate\Support\Facades\Validator {}
     class View extends \Illuminate\Support\Facades\View {}
     class Vite extends \Illuminate\Support\Facades\Vite {}
+    class Tenancy extends \Stancl\Tenancy\Facades\Tenancy {}
+    class GlobalCache extends \Stancl\Tenancy\Facades\GlobalCache {}
     class Otp extends \Teckwei1993\Otp\OtpFacade {}
 }
 
