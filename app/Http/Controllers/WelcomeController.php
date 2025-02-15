@@ -9,8 +9,11 @@ use App\Jobs\SendEmailJob;
 use App\Mail\OtpEmail;
 use App\Models\User;
 use Auth;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Registered;
 use Inertia\Inertia;
 use Otp;
+use RateLimiter;
 
 class WelcomeController extends Controller
 {
@@ -29,6 +32,16 @@ class WelcomeController extends Controller
     {
         $data = $request->validated();
         $email = $data['email'];
+
+        $ip = $request->ip();
+        $key = "request-otp-{$ip}";
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            event(new Lockout($request));
+            $seconds = RateLimiter::availableIn($key);
+            return redirect()->route('welcome.enterEmail')->withErrors(['email' => "لقد قمت بإرسال الرمز مرات كثيرة، الرجاء المحاولة بعد {$seconds} ثانية"]);
+        }
+
+        RateLimiter::hit($key, 60 * 5);
 
         $otp = Otp::generate($email);
         dispatch(new SendEmailJob($email, new OtpEmail($otp)));
@@ -60,10 +73,12 @@ class WelcomeController extends Controller
 
         $user = User::query()->firstOrCreate(['email' => $email]);
 
-        Auth::login($user);
+        Auth::login($user, true);
 
-        if ($user->wasRecentlyCreated)
+        if ($user->wasRecentlyCreated) {
+            event(new Registered($user));
             return redirect()->route('welcome.completeProfile');
+        }
 
         return redirect()->route('dashboard');
     }

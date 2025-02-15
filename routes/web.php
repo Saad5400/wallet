@@ -7,15 +7,29 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::get('/login', fn() => redirect('welcome'))->name('login');
 Route::get('/', fn() => Auth::guest() ? redirect('welcome') : redirect('dashboard'));
 
-Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
-Route::get('/welcome/email', [WelcomeController::class, 'email'])->name('welcome.enterEmail');
-Route::post('/welcome/email', [WelcomeController::class, 'requestOtp'])->name('welcome.requestOtp');
-Route::get('/welcome/email/otp', [WelcomeController::class, 'enterOtp'])->name('welcome.enterOtp');
-Route::post('/welcome/email/otp', [WelcomeController::class, 'validateOtp'])->name('welcome.validateOtp');
-Route::get('/welcome/profile', [WelcomeController::class, 'completeProfile'])->name('welcome.completeProfile');
-Route::post('/welcome/profile', [WelcomeController::class, 'saveProfile'])->name('welcome.saveProfile');
+Route::group([
+    'middleware' => 'guest',
+    'as' => 'welcome.',
+    'prefix' => 'welcome',
+], function () {
+    Route::get('/', [WelcomeController::class, 'index'])->name('index');
+    Route::get('/email', [WelcomeController::class, 'email'])->name('enterEmail');
+    Route::post('/email', [WelcomeController::class, 'requestOtp'])->name('requestOtp');
+    Route::get('/email/otp', [WelcomeController::class, 'enterOtp'])->name('enterOtp');
+    Route::post('/email/otp', [WelcomeController::class, 'validateOtp'])->name('validateOtp');
+});
+
+Route::group([
+    'middleware' => 'auth',
+    'as' => 'welcome.',
+    'prefix' => 'welcome',
+], function () {
+    Route::get('/profile', [WelcomeController::class, 'completeProfile'])->name('completeProfile');
+    Route::post('/profile', [WelcomeController::class, 'saveProfile'])->name('saveProfile');
+});
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -26,5 +40,3 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-require __DIR__ . '/auth.php';

@@ -60,7 +60,7 @@ export default function Page({ email = '' }) {
                         }
                     </Button>
                     <Button asChild variant={'link'} style={{ viewTransitionName: 'welcome-back-button' }}>
-                        <Link className='flex flex-row items-center gap-2' href={route('welcome')}>
+                        <Link className='flex flex-row items-center gap-2' href={route('welcome.index')}>
                             <Icon icon='line-md:log-out' className='size-4' />
                             الرجوع
                         </Link>
