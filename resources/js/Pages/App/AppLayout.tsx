@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 export default function AppLayout({ children }: { children: React.ReactNode }): JSX.Element {
     return (
         <MainLayout>
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 bg-background">
                 {children}
             </div>
             <Navbar />
