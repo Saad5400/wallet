@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
 import { Link } from "@inertiajs/react";
-import { useMemo } from "react";
 import AddRecord from "./AddRecord";
+import tenantRoute from "@/lib/tenantRoute";
 
 function NavBox({ children }: { children: React.ReactNode }) {
     return (
@@ -22,12 +22,7 @@ function NavButton({
     iconName: string;
     text: string;
 }) {
-    const isActive = useMemo(() => {
-        return route().current(routeName);
-    }, [routeName]);
-
-    // if it's already active, we don't want to create a Link component, instead we just render a div. To do that let's make a dynamic component
-    const Content = isActive ? 'div' : Link;
+    const isActive = route().current(routeName);
 
     return (
         <NavBox>
@@ -35,10 +30,10 @@ function NavButton({
                 "flex flex-col gap-1 justify-center items-center size-fit p-0",
                 isActive || "text-muted"
             )}>
-                <Content href={route(routeName)}>
+                <Link href={tenantRoute(routeName)}>
                     <Icon icon={iconName} className='size-8' />
                     <span className="text-xs">{text}</span>
-                </Content>
+                </Link>
             </Button>
         </NavBox>
     );
@@ -48,10 +43,10 @@ export default function Navbar() {
     return (
         <nav className="w-screen bg-card border-t-1 absolute bottom-0 px-4 pb-6 pt-2 flex flex-row justify-between" style={{ zIndex: 10, viewTransitionName: 'bottom-navbar' }}>
             <NavButton routeName="home" iconName="material-symbols:home-outline-rounded" text="الرئيسية" />
-            <NavButton routeName="home" iconName="material-symbols:arrow-split-rounded" text="العمليات" />
+            <NavButton routeName="records" iconName="material-symbols:arrow-split-rounded" text="العمليات" />
             <NavBox><AddRecord /></NavBox>
-            <NavButton routeName="home" iconName="material-symbols:wallet" text="الحسابات" />
-            <NavButton routeName="home" iconName="material-symbols:menu-rounded" text="الإعدادات" />
+            <NavButton routeName="accounts" iconName="material-symbols:wallet" text="الحسابات" />
+            <NavButton routeName="settings" iconName="material-symbols:menu-rounded" text="الإعدادات" />
         </nav>
     );
 }

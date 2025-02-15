@@ -25,10 +25,6 @@ class AuthorizeUserToTenant
             return redirect()->route('welcome.index');
         }
 
-        URL::defaults([
-            'tenant' => $tenant,
-        ]);
-
         return $next($request);
     }
 }

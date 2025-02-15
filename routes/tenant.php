@@ -29,4 +29,10 @@ Route::group([
     'prefix' => '/{tenant}',
 ], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/records', [HomeController::class, 'index'])->name('records');
+
+    Route::get('/accounts', [HomeController::class, 'index'])->name('accounts');
+
+    Route::get('/settings', [HomeController::class, 'index'])->name('settings');
 });

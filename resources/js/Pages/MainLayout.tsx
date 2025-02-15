@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { router } from '@inertiajs/react';
+import ProgressBar from './ProgressBar';
 
 /**
  * MainLayout Component
@@ -51,5 +52,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }):
     }, []); // Empty dependency array ensures this effect runs only once on mount.
 
     // Render the children components within the layout.
-    return <>{children}</>;
+    return (
+        <>
+            <ProgressBar />
+            {children}
+        </>
+    );
 }

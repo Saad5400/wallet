@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\URL;
 
 if (!function_exists('homeRedirect')) {
     /**
@@ -16,6 +17,7 @@ if (!function_exists('homeRedirect')) {
         if (Auth::guest())
             return redirect()->route('welcome.index');
 
-        return redirect()->route('home', ['tenant' => Auth::user()->tenants->first()->id]);
+        $tenant = Auth::user()->tenants->first();
+        return redirect()->route('home', ['tenant' => $tenant->id]);
     }
 }

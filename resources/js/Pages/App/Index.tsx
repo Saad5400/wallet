@@ -1,9 +1,10 @@
 import AppLayout from "./AppLayout";
 
-export default function Index() {
+function Index() {
     return (
-        <AppLayout>
-            <h1>App</h1>
-        </AppLayout>
+        <h1>App</h1>
     );
 }
+
+Index.layout = (page: React.ReactNode) => <AppLayout>{page}</AppLayout>;
+export default Index;
