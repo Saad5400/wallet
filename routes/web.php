@@ -20,12 +20,3 @@ Route::group([
     Route::get('/email/otp', [WelcomeController::class, 'enterOtp'])->name('enterOtp');
     Route::post('/email/otp', [WelcomeController::class, 'validateOtp'])->name('validateOtp');
 });
-
-Route::group([
-    'middleware' => 'auth',
-    'as' => 'welcome.',
-    'prefix' => 'welcome',
-], function () {
-    Route::get('/profile', [WelcomeController::class, 'completeProfile'])->name('completeProfile');
-    Route::post('/profile', [WelcomeController::class, 'saveProfile'])->name('saveProfile');
-});

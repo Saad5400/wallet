@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthorizeUserToTenant
@@ -23,6 +24,10 @@ class AuthorizeUserToTenant
         if (is_null($user) || !$user->tenants->contains($tenant)) {
             return redirect()->route('welcome.index');
         }
+
+        URL::defaults([
+            'tenant' => $tenant,
+        ]);
 
         return $next($request);
     }

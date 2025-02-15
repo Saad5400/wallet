@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\HomeController;
 use App\Http\Middleware\AuthorizeUserToTenant;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
@@ -27,10 +28,5 @@ Route::group([
     ],
     'prefix' => '/{tenant}',
 ], function () {
-
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    })->name('home');
-
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 });
-
