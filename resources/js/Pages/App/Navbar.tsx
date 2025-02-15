@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
 import { Link } from "@inertiajs/react";
 import { useMemo } from "react";
+import AddRecord from "./AddRecord";
 
 function NavBox({ children }: { children: React.ReactNode }) {
     return (
@@ -31,12 +32,12 @@ function NavButton({
     return (
         <NavBox>
             <Button asChild variant='link' className={cn(
-                "flex flex-col gap-1 justify-center items-center w-fit h-fit p-0",
+                "flex flex-col gap-1 justify-center items-center size-fit p-0",
                 isActive || "text-muted"
             )}>
                 <Content href={route(routeName)}>
                     <Icon icon={iconName} className='size-8' />
-                    <span>{text}</span>
+                    <span className="text-xs">{text}</span>
                 </Content>
             </Button>
         </NavBox>
@@ -45,9 +46,10 @@ function NavButton({
 
 export default function Navbar() {
     return (
-        <nav className="w-screen h-20 bg-card border-t-1 absolute bottom-0 p-4 pt-0 flex flex-row justify-between" style={{ zIndex: 10, viewTransitionName: 'bottom-navbar' }}>
+        <nav className="w-screen bg-card border-t-1 absolute bottom-0 px-4 pb-6 pt-2 flex flex-row justify-between" style={{ zIndex: 10, viewTransitionName: 'bottom-navbar' }}>
             <NavButton routeName="home" iconName="material-symbols:home-outline-rounded" text="الرئيسية" />
             <NavButton routeName="home" iconName="material-symbols:arrow-split-rounded" text="العمليات" />
+            <NavBox><AddRecord /></NavBox>
             <NavButton routeName="home" iconName="material-symbols:wallet" text="الحسابات" />
             <NavButton routeName="home" iconName="material-symbols:menu-rounded" text="الإعدادات" />
         </nav>
