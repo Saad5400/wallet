@@ -22,7 +22,7 @@ import WelcomeLogo from './WelcomeLogo';
  * @param {string} [props.email=''] - The email address to which the OTP was sent.
  * @returns {JSX.Element} The rendered OTP validation page.
  */
-export default function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
+function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
     // Initialize auto-animate for smooth animations within the OTP container.
     const [otpContainer] = useAutoAnimate();
 
@@ -47,7 +47,7 @@ export default function EnterOtp({ email = '' }: { email?: string; }): JSX.Eleme
     useEffect(clearErrors, [isDirty]);
 
     return (
-        <Layout>
+        <>
             {/* Set the page title */}
             <Head title="رمز التحقق" />
             {/* Display the welcome logo */}
@@ -116,6 +116,9 @@ export default function EnterOtp({ email = '' }: { email?: string; }): JSX.Eleme
                     </Button>
                 </div>
             </form>
-        </Layout>
+        </>
     );
 }
+
+EnterOtp.layout = (page: JSX.Element) => <Layout>{page}</Layout>;
+export default EnterOtp;

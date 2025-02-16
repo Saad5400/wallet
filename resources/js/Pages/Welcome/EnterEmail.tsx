@@ -17,7 +17,7 @@ import WelcomeLogo from './WelcomeLogo';
  * @param {string} [props.email=''] - Initial email value.
  * @returns {JSX.Element} The rendered EnterEmail component.
  */
-export default function EnterEmail({ email = '' }) {
+function EnterEmail({ email = '' }: { email?: string; }): JSX.Element {
     // Initialize auto-animate for the email input container.
     const [emailContainer] = useAutoAnimate();
 
@@ -45,7 +45,7 @@ export default function EnterEmail({ email = '' }) {
     useEffect(clearErrors, [isDirty]);
 
     return (
-        <Layout>
+        <>
             {/* Set the document title */}
             <Head title="الدخول" />
             {/* Render the welcome logo */}
@@ -95,6 +95,9 @@ export default function EnterEmail({ email = '' }) {
                     </Button>
                 </div>
             </form>
-        </Layout>
+        </>
     );
 }
+
+EnterEmail.layout = (page: JSX.Element) => <Layout>{page}</Layout>;
+export default EnterEmail;

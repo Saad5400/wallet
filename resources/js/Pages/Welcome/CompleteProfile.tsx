@@ -15,7 +15,7 @@ import WelcomeLogo from './WelcomeLogo';
  *
  * @returns {JSX.Element} The rendered profile completion page.
  */
-export default function Page() {
+function Page(): JSX.Element {
     // Initialize auto-animation for the name input container.
     const [nameContainer] = useAutoAnimate();
 
@@ -42,7 +42,7 @@ export default function Page() {
     }, [isDirty]);
 
     return (
-        <Layout>
+        <>
             {/* Set the page title */}
             <Head title="اكمال الحساب" />
             {/* Render the welcome logo */}
@@ -85,6 +85,9 @@ export default function Page() {
                     </Button>
                 </div>
             </form>
-        </Layout>
+        </>
     );
 }
+
+Page.layout = (page: JSX.Element) => <Layout>{page}</Layout>;
+export default Page;

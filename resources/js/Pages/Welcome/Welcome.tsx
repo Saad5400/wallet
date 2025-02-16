@@ -13,9 +13,9 @@ import WelcomeLogo from './WelcomeLogo';
  *
  * @returns {JSX.Element} The rendered WelcomePage component.
  */
-export default function WelcomePage(): JSX.Element {
+function WelcomePage(): JSX.Element {
     return (
-        <WelcomeLayout>
+        <>
             {/* Set the page title for SEO and browser display */}
             <Head title="هلا" />
 
@@ -33,7 +33,7 @@ export default function WelcomePage(): JSX.Element {
             </p>
 
             {/* Hero image for visual appeal */}
-            <img src='/images/hero.svg' alt='محفظتنا' />
+            <img src='/images/hero.svg' alt='محفظتنا' className='-mt-10 -mb-6' loading='lazy' />
 
             {/* Button linking to the email entry page */}
             <Button asChild size={'wide'}>
@@ -48,6 +48,9 @@ export default function WelcomePage(): JSX.Element {
             <small className='px-8 text-center text-muted'>
                 بالضغط على الزر أعلاه، أنت توافق على <span className='text-foreground'>شروط الاستخدام</span> و<span className='text-foreground'>سياسة الخصوصية</span>
             </small>
-        </WelcomeLayout>
+        </>
     );
 }
+
+WelcomePage.layout = (page: JSX.Element) => <WelcomeLayout>{page}</WelcomeLayout>;
+export default WelcomePage;

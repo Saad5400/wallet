@@ -106,10 +106,13 @@ class WelcomeController extends Controller
         RateLimiter::hit($key, 60 * 5);
 
         // Generate an OTP for the given email.
-        $otp = Otp::generate($email);
-
-        // Dispatch a job to send the OTP via email asynchronously.
-        dispatch(new SendEmailJob($email, new OtpEmail($otp)));
+        if (config('app.env') === 'local') {
+            $otp = Otp::setCustomize('1')->generate($email);
+        } else {
+            $otp = Otp::generate($email);
+            // Dispatch a job to send the OTP via email asynchronously.
+            dispatch(new SendEmailJob($email, new OtpEmail($otp)));
+        }
 
         // Store the email in the session for later use during OTP validation.
         session()->put('email', $email);

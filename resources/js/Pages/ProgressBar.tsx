@@ -3,7 +3,11 @@ import { useRef } from "react";
 import LoadingBar, { LoadingBarRef } from "react-top-loading-bar";
 
 
-export default function ProgressBar() {
+export default function ProgressBar({
+    containerStyle,
+}: {
+    containerStyle?: React.CSSProperties;
+}) {
     const progressBar = useRef<LoadingBarRef>(null)
 
     router.on('start', () => progressBar.current?.continuousStart());
@@ -16,5 +20,5 @@ export default function ProgressBar() {
 
     router.on('finish', () => progressBar.current?.complete());
 
-    return <LoadingBar ref={progressBar} className="!bg-primary" style={{ viewTransitionName: 'navigation-progress-bar' }} />;
+    return <LoadingBar ref={progressBar} className="!bg-primary" style={{ viewTransitionName: 'navigation-progress-bar' }} containerStyle={containerStyle} />;
 }

@@ -13,7 +13,7 @@ import MainLayout from '@/Pages/MainLayout';
 export default function WelcomeLayout({ children }: PropsWithChildren): JSX.Element {
     return (
         <MainLayout>
-            <div className='flex flex-col items-center justify-center min-h-screen gap-4 px-4 py-24'>
+            <div className='bg-background flex flex-col items-center justify-center h-fit min-h-screen md:min-h-full gap-4 p-4'>
                 {children}
             </div>
         </MainLayout>
