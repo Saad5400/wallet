@@ -25,6 +25,8 @@ class AuthorizeUserToTenant
             return redirect()->route('welcome.index');
         }
 
+        setPermissionsTeamId($tenant->id);
+
         return $next($request);
     }
 }

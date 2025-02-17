@@ -3,7 +3,7 @@ import React from 'react';
 import ProgressBar from './ProgressBar';
 import ViewTransition from './ViewTransition';
 import { useIsMobile } from '@/hooks/use-mobile';
-import AndroidMockup from '@/components/AndroidMockup';
+import AndroidMockup from '@/components/mockup/AndroidMockup';
 
 export default function MainLayout({ children }: { children: React.ReactNode }): JSX.Element {
     const isMobile = useIsMobile();

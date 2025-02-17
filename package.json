@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsc && vite build && vite build --ssr",
     "dev": "vite",
+    "setup-test": "php artisan migrate:fresh --force --seed --env=testing && npm run build && npx concurrently -c \"#93c5fd,#fb7185\" \"php artisan serve --env=testing\" \"php artisan inertia:start-ssr\" --names=server,inertia",
     "test": "playwright test --ui",
     "report": "playwright show-report"
   },

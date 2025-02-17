@@ -1,7 +1,7 @@
 import ProgressBar from "@/Pages/ProgressBar";
 import { Property } from "csstype";
 import { CSSProperties, PropsWithChildren, useMemo } from "react";
-import { IAndroidMockupVariantProps, StyleSheet } from "react-device-mockup/dist/shared-types/variants-interface";
+import { IAndroidMockupVariantProps, StyleSheet } from "./variants-interface";
 
 interface IAndroidMockupProps {
 	/**
