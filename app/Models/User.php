@@ -41,4 +41,9 @@ class User extends Authenticatable
     protected $hidden = [
         'remember_token',
     ];
+
+    public function records()
+    {
+        return $this->hasMany(Record::class);
+    }
 }
