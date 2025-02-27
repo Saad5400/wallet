@@ -68,15 +68,20 @@ function EnterEmail({ email = '' }: { email?: string; }): JSX.Element {
                         placeholder='example@xyz.com'
                         value={data.email}
                         onChange={e => setData('email', e.target.value)}
+                        data-testid="email-input"
                     />
                     {/* Display validation error for email if present */}
-                    {errors.email && <small className='self-end text-destructive'>{errors.email}</small>}
+                    {errors.email && (
+                        <p className="text-sm text-destructive mt-2">
+                            {errors.email}
+                        </p>
+                    )}
                 </div>
 
                 {/* Container for action buttons */}
                 <div className='flex flex-col items-start'>
                     {/* Submit button for OTP request */}
-                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }}>
+                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }} data-testid="submit-button">
                         {processing ? (
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                         ) : (

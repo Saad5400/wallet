@@ -74,6 +74,7 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
                             value={data.otp}
                             required
                             onChange={(e) => setData('otp', e)}
+                            data-testid="otp-input"
                         >
                             {/* First group of OTP input slots */}
                             <InputOTPGroup className='w-full'>
@@ -92,12 +93,16 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
                         </InputOTP>
                     </div>
                     {/* Display OTP error message if present */}
-                    {errors.otp && <small className='self-end text-destructive'>{errors.otp}</small>}
+                    {errors.otp && (
+                        <p className="text-sm text-red-500 mt-2" data-testid="error-message">
+                            {errors.otp}
+                        </p>
+                    )}
                 </div>
                 {/* Container for action buttons */}
                 <div className='flex flex-col items-start'>
                     {/* Button to submit OTP validation */}
-                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }}>
+                    <Button type="submit" size={'wide'} disabled={processing} data-testid="otp-submit-button" style={{ viewTransitionName: 'welcome-continue-button' }}>
                         {processing ? (
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                         ) : (

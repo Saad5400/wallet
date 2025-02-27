@@ -91,7 +91,7 @@ class WelcomeController extends Controller
         $key = "request-otp-{$ip}";
 
         // If too many OTP requests have been made from this IP, lock the user out.
-        if (RateLimiter::tooManyAttempts($key, 5)) {
+        if (!isLocalOrTesting() && RateLimiter::tooManyAttempts($key, 5)) {
             // Fire a lockout event.
             event(new Lockout($request));
             // Determine how many seconds remain until the next allowed attempt.
@@ -160,7 +160,7 @@ class WelcomeController extends Controller
         $otp = $data['otp'];
 
         // Validate the provided OTP for the email.
-        if (!in_array(config('app.env'), ['local', 'testing']) && !Otp::validate($email, $otp)->status) {
+        if ((isLocalOrTesting() && $otp != '000000') || (!isLocalOrTesting() && !Otp::validate($email, $otp)->status)) {
             // If validation fails, redirect back with an error message.
             return redirect()->route('welcome.enterOtp')->withErrors([
                 'otp' => 'رمز التحقق المدخل غير صحيح'

@@ -20,4 +20,14 @@ if (!function_exists('homeRedirect')) {
         $tenant = Auth::user()->tenants->first();
         return redirect()->route('home', ['tenant' => $tenant->id]);
     }
+
+    /**
+     * Check if the application is running in local or testing environment.
+     *
+     * @return bool
+     */
+    function isLocalOrTesting(): bool
+    {
+        return in_array(config('app.env'), ['local', 'testing']);
+    }
 }
