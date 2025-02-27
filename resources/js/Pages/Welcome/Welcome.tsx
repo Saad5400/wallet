@@ -23,20 +23,20 @@ function WelcomePage(): JSX.Element {
             <WelcomeLogo />
 
             {/* Main heading */}
-            <h4>
+            <h4 data-testid="welcome-heading">
                 محفظتنا
             </h4>
 
             {/* Description with emphasized text */}
-            <p className='text-muted'>
+            <p className='text-muted' data-testid="welcome-description">
                 تتبع المصاريف <span className='text-foreground'>المشتركة</span> بين الأصدقاء والعائلة
             </p>
 
             {/* Hero image for visual appeal */}
-            <img src='/images/hero.svg' alt='محفظتنا' className='-mt-10 -mb-6' loading='lazy' />
+            <img src='/images/hero.svg' alt='محفظتنا' className='-mt-10 -mb-6' loading='lazy' data-testid="welcome-hero-image" />
 
             {/* Button linking to the email entry page */}
-            <Button asChild size={'wide'}>
+            <Button asChild size={'wide'} data-testid="welcome-start-button">
                 <Link href={route('welcome.enterEmail')}>
                     ابدأ الآن
                     {/* Icon for additional visual indication */}
@@ -45,7 +45,7 @@ function WelcomePage(): JSX.Element {
             </Button>
 
             {/* Disclaimer regarding terms of service and privacy policy */}
-            <small className='px-8 text-center text-muted'>
+            <small className='px-8 text-center text-muted' data-testid="welcome-disclaimer">
                 بالضغط على الزر أعلاه، أنت توافق على <span className='text-foreground'>شروط الاستخدام</span> و<span className='text-foreground'>سياسة الخصوصية</span>
             </small>
         </>
