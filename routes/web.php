@@ -31,6 +31,6 @@ Route::group([
         ],
     ], function () {
         Route::get('/complete-profile', [WelcomeController::class, 'completeProfile'])->name('completeProfile');
-        Route::post('/complete-profile', [WelcomeController::class, 'saveProfile'])->name('completeProfile');
+        Route::post('/complete-profile', [WelcomeController::class, 'saveProfile'])->name('saveProfile');
     });
 });

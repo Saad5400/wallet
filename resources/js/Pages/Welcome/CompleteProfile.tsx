@@ -64,16 +64,17 @@ function Page(): JSX.Element {
                         id='name'
                         name='name'
                         required
+                        data-testid="name-input"
                         placeholder='اسم المستخدم العلني'
                         value={data.name}
                         onChange={e => setData('name', e.target.value)}
                     />
                     {/* Display error message for name if any */}
-                    {errors.name && <small className='self-end text-destructive'>{errors.name}</small>}
+                    {errors.name && <small className='self-end text-destructive' data-testid="name-error">{errors.name}</small>}
                 </div>
                 {/* Container for the submit button */}
                 <div className='flex flex-col items-start'>
-                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }}>
+                    <Button size={'wide'} disabled={processing} data-testid="submit-button" style={{ viewTransitionName: 'welcome-continue-button' }}>
                         {processing ? (
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                         ) : (
