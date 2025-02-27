@@ -3,7 +3,7 @@ import Layout from '@/Pages/Welcome/WelcomeLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Icon } from "@iconify/react";
 import { Label } from '@/components/ui/label';
-import { FormEventHandler, useEffect } from 'react';
+import { FormEventHandler, useEffect, useRef } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import {
     InputOTP,
@@ -30,6 +30,8 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
     const { data, setData, post, processing, clearErrors, errors, reset, isDirty } = useForm({
         otp: '',
     });
+
+    const submitButton = useRef<HTMLButtonElement>(null);
 
     /**
      * Handle form submission for OTP validation.
@@ -75,6 +77,7 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
                             required
                             onChange={(e) => setData('otp', e)}
                             data-testid="otp-input"
+                            onComplete={() => submitButton.current?.click()}
                         >
                             {/* First group of OTP input slots */}
                             <InputOTPGroup className='w-full'>
@@ -102,7 +105,14 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
                 {/* Container for action buttons */}
                 <div className='flex flex-col items-start'>
                     {/* Button to submit OTP validation */}
-                    <Button type="submit" size={'wide'} disabled={processing} data-testid="otp-submit-button" style={{ viewTransitionName: 'welcome-continue-button' }}>
+                    <Button
+                        type="submit"
+                        size={'wide'}
+                        disabled={processing}
+                        data-testid="otp-submit-button"
+                        style={{ viewTransitionName: 'welcome-continue-button' }}
+                        ref={submitButton}
+                    >
                         {processing ? (
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                         ) : (

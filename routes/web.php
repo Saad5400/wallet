@@ -5,7 +5,7 @@ use App\Http\Middleware\Guest;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'root']);
-Route::get('/login', fn() => redirect()->route('welcome.index'));
+Route::get('/login', fn() => redirect()->route('welcome.index'))->name('login');
 
 Route::group([
     'as' => 'welcome.',
