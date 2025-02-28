@@ -12,6 +12,7 @@ use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
+use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -94,7 +95,9 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function register()
     {
-        //
+        InitializeTenancyByPath::$onFail = function ($exception, $request, $next) {
+            abort(404);
+        };
     }
 
     public function boot()
@@ -137,7 +140,7 @@ class TenancyServiceProvider extends ServiceProvider
             Middleware\InitializeTenancyByDomain::class,
             Middleware\InitializeTenancyBySubdomain::class,
             Middleware\InitializeTenancyByDomainOrSubdomain::class,
-            Middleware\InitializeTenancyByPath::class,
+            InitializeTenancyByPath::class,
             Middleware\InitializeTenancyByRequestData::class,
         ];
 
