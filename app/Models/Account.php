@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Account extends Model
@@ -15,20 +16,15 @@ class Account extends Model
         'cashback_rate',
     ];
 
-    public function incomingRecords()
+    public function records(): HasMany
     {
-        return $this->hasMany(Record::class, 'destination_account_id');
-    }
-
-    public function outgoingRecords()
-    {
-        return $this->hasMany(Record::class, 'source_account_id');
+        return $this->hasMany(Record::class);
     }
 
     public function balance(): Attribute
     {
         return Attribute::make(function () {
-            return $this->incomingRecords->sum('amount') - $this->outgoingRecords->sum('amount');
+            return $this->records->sum('amount');
         });
     }
 }

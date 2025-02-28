@@ -31,7 +31,7 @@ function EnterEmail({ email = '' }: { email?: string; }): JSX.Element {
      *
      * @param {React.FormEvent} e - The form submission event.
      */
-    const submit: FormEventHandler = (e) => {
+    const submit: FormEventHandler = (e: React.FormEvent) => {
         e.preventDefault();
 
         // Prevent submission if already processing.

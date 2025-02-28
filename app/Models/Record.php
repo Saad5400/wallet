@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\RecordType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Record extends Model
@@ -12,8 +13,7 @@ class Record extends Model
 
     protected $fillable = [
         'user_id',
-        'source_account_id',
-        'destination_account_id',
+        'account_id',
         'category_id',
         'sub_category_id',
         'type',
@@ -26,27 +26,22 @@ class Record extends Model
         'type' => RecordType::class,
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function sourceAccount()
+    public function account(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'source_account_id');
+        return $this->belongsTo(Account::class);
     }
 
-    public function destinationAccount()
-    {
-        return $this->belongsTo(Account::class, 'destination_account_id');
-    }
-
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function subCategory()
+    public function subCategory(): BelongsTo
     {
         return $this->belongsTo(SubCategory::class);
     }

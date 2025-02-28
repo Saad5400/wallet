@@ -77,7 +77,7 @@ class WelcomeController extends Controller
      * - Dispatches a job to send the OTP via email.
      * - Stores the email in the session for subsequent verification.
      *
-     * @param  \App\Http\Requests\Welcome\RequestOtpRequest  $request
+     * @param \App\Http\Requests\Welcome\RequestOtpRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function requestOtp(RequestOtpRequest $request)
@@ -137,20 +137,6 @@ class WelcomeController extends Controller
         return Inertia::render('Welcome/EnterOtp', compact('email'));
     }
 
-    /**
-     * Validate the submitted OTP.
-     *
-     * This method:
-     * - Validates the OTP against the one generated for the stored email.
-     * - If invalid, redirects back to the OTP entry page with an error.
-     * - If valid, removes the email from the session.
-     * - Logs in the user (creating a new user if necessary).
-     * - If the user is new, triggers the Registered event and redirects to the profile completion page.
-     * - Otherwise, redirects the user to the dashboard.
-     *
-     * @param  \App\Http\Requests\Welcome\ValidateOtpRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function validateOtp(ValidateOtpRequest $request)
     {
         // Validate the OTP input.
@@ -158,6 +144,25 @@ class WelcomeController extends Controller
         // Retrieve the email from the session.
         $email = session('email');
         $otp = $data['otp'];
+
+        // Identify the client by IP address for rate limiting.
+        $ip = $request->ip();
+        $key = "validate-otp-{$ip}";
+
+        // If too many OTP validation attempts have been made from this IP, lock the user out.
+        if (!isLocalOrTesting() && RateLimiter::tooManyAttempts($key, 5)) {
+            // Fire a lockout event.
+            event(new Lockout($request));
+            // Determine how many seconds remain until the next allowed attempt.
+            $seconds = RateLimiter::availableIn($key);
+            // Redirect back to the OTP entry page with an error message.
+            return redirect()->route('welcome.enterOtp')->withErrors([
+                'otp' => "لقد قمت بإدخال رمز التحقق مرات كثيرة، الرجاء المحاولة بعد {$seconds} ثانية"
+            ]);
+        }
+
+        // Register this attempt and set a decay time of 5 minutes (300 seconds).
+        RateLimiter::hit($key, 60 * 5);
 
         // Validate the provided OTP for the email.
         if ((isLocalOrTesting() && $otp != '000000') || (!isLocalOrTesting() && !Otp::validate($email, $otp)->status)) {
@@ -215,10 +220,10 @@ class WelcomeController extends Controller
     /**
      * Save the user's completed profile.
      *
-     * This method validates the submitted profile data, updates the user's information, 
+     * This method validates the submitted profile data, updates the user's information,
      * and redirects them to the dashboard.
      *
-     * @param  \App\Http\Requests\Welcome\SaveProfileRequest  $request
+     * @param \App\Http\Requests\Welcome\SaveProfileRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function saveProfile(SaveProfileRequest $request)

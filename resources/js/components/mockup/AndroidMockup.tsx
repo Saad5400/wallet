@@ -1,4 +1,3 @@
-import ProgressBar from "@/Pages/ProgressBar";
 import { Property } from "csstype";
 import { CSSProperties, PropsWithChildren, useMemo } from "react";
 import { IAndroidMockupVariantProps, StyleSheet } from "./variants-interface";
@@ -384,14 +383,12 @@ function AndroidPortrait(props: PropsWithChildren<IAndroidMockupVariantProps>) {
 					{/* screen content */}
 					<div style={styles.screenCont}>
 						{props.children}
-						<ProgressBar containerStyle={{ top: parseFloat(styles.statusbar.height.toString()) * 1.35, width: styles.screen.width, left: undefined }} />
 					</div>
 					{/* camera - fullScreen - portrait */}
 					{hideStatusBar && <div style={styles.cameraFullScreen} />}
 
 					{/* navigation bar - swipe */}
-					{hideNavigationBar === false &&
-						navigationBar === "swipe" &&
+					{!hideNavigationBar && navigationBar === "swipe" &&
 						(transparentNavigationBar ? (
 							<div style={styles.navigationSwipeTransparentCont}>
 								<div style={styles.navigationSwipeBar} />
