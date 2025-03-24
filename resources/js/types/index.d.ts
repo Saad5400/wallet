@@ -4,7 +4,12 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    email_verified_at?: string;
+}
+
+export interface Tenant {
+    id: string;
+    name: string;
+    month_start_day: number;
 }
 
 export type PageProps<
@@ -12,6 +17,12 @@ export type PageProps<
 > = T & {
     auth: {
         user: User;
+        tenant: Tenant;
     };
     ziggy: Config & { location: string };
 };
+
+export interface Period {
+    startDate: Dayjs;
+    endDate: Dayjs;
+}

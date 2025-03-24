@@ -9,6 +9,11 @@ use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 class Tenant extends BaseTenant implements TenantContract
 {
     protected $keyType = 'string';
+    protected $fillable = [
+        'id',
+        'month_start_date',
+        'data'
+    ];
 
     public function users()
     {

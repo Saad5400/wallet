@@ -187,6 +187,7 @@ class WelcomeController extends Controller
 
             $tenant = Tenant::create([
                 'name' => 'عائلتي',
+                'month_start_date' => 27,
             ]);
 
             $user->tenants()->attach($tenant->id);

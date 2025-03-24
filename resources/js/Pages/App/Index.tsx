@@ -1,8 +1,23 @@
 import AppLayout from "./AppLayout";
+import { PageProps, Period } from "@/types";
+import React, { useState } from "react";
+import { Dayjs } from "dayjs";
+import PeriodSelector from "./PeriodSelector";
 
-function Index() {
+function Index({ auth }: PageProps) {
+    const [selectedPeriod, setSelectedPeriod] = useState<Period | undefined>(undefined);
+
     return (
-        <h1>App</h1>
+        <>
+            <header className="flex justify-between items-center">
+                <h5>هلا {auth.user.name}</h5>
+                <PeriodSelector
+                    selectedPeriod={selectedPeriod}
+                    setSelectedPeriod={setSelectedPeriod}
+                    monthStartDay={auth?.tenant?.month_start_day}
+                />
+            </header>
+        </>
     );
 }
 
