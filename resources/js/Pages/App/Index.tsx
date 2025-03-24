@@ -14,7 +14,7 @@ function Index({ auth }: PageProps) {
                 <PeriodSelector
                     selectedPeriod={selectedPeriod}
                     setSelectedPeriod={setSelectedPeriod}
-                    monthStartDay={auth?.tenant?.month_start_day}
+                    monthStartDay={27}
                 />
             </header>
         </>
