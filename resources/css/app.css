@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 @plugin '@tailwindcss/forms';
 @plugin 'tailwindcss-animate';
@@ -35,7 +35,7 @@
   --destructive: hsl(0, 69%, 55%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  --success: hsl(144, 100%, 56%);
+  --success: hsl(144, 85%, 32%);
   --success-foreground: hsl(0 0% 98%);
 
   --border: hsl(0 0% 14.9%);
@@ -63,7 +63,7 @@
 
 @theme {
   --font-sans:
-    "El Messiri", Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    "Rubik", Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   --radius-lg: var(--radius);

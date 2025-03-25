@@ -16,10 +16,12 @@ return new class extends Migration {
             $table->string('tenant_id');
             $table->foreignId('user_id')->constrained();
             $table->foreignId('account_id')->constrained();
-            $table->foreignId('category_id')->constrained();
-            $table->foreignId('sub_category_id')->constrained();
+            $table->foreignId('category_id')->nullable()->constrained();
+            $table->foreignId('sub_category_id')->nullable()->constrained();
             $table->decimal('amount', 10, 2);
             $table->string('description')->nullable();
+            $table->string('type');
+            $table->boolean('ignored')->default(false);
 
             $table->foreign('tenant_id')->references('id')->on('tenants');
         });
