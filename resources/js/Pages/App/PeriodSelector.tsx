@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import React, { useMemo, useEffect } from "react";
-import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/ar";
 import { Period } from "@/types";
 
@@ -8,36 +7,15 @@ interface PeriodSelectorProps {
     selectedPeriod?: Period;
     setSelectedPeriod: (period: Period) => void;
     monthStartDay?: number;
+    defaultPeriod: Period;
 }
 
 const PeriodSelector: React.FC<PeriodSelectorProps> = ({
     selectedPeriod,
     setSelectedPeriod,
     monthStartDay = 27,
+    defaultPeriod,
 }) => {
-
-    const defaultPeriod = useMemo(() => {
-        const today = dayjs();
-        const isBeforeMonthStart = today.date() < monthStartDay;
-
-        const startDate = (isBeforeMonthStart
-            ? today.subtract(1, 'month').date(monthStartDay)
-            : today.date(monthStartDay)
-        ).startOf('day');
-
-        const endDate = startDate.add(1, 'month').startOf('day');
-
-        return { startDate, endDate };
-    }, [monthStartDay]);
-
-
-    // Initialize with default if no period is set
-    useEffect(() => {
-        if (!selectedPeriod) {
-            setSelectedPeriod(defaultPeriod);
-        }
-    }, [selectedPeriod, setSelectedPeriod, defaultPeriod]);
-
     const currentPeriod = selectedPeriod || defaultPeriod;
 
     const periodLabel = useMemo(() => {

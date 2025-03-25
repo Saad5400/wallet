@@ -2,16 +2,26 @@ import AppLayout from "./AppLayout";
 import { PageProps, Period } from "@/types";
 import React, { useState } from "react";
 import PeriodSelector from "./PeriodSelector";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { MoneyCard } from "@/components/MoneyCard";
+import dayjs, { Dayjs } from "dayjs";
 
 interface IndexProps extends PageProps {
     balance: number;
     income: number;
     expense: number;
+    defaultPeriod: {
+        startDate: string;
+        endDate: string;
+    };
 }
 
-function Index({ auth, balance, income, expense }: IndexProps) {
+function Index({
+    auth,
+    balance,
+    income,
+    expense,
+    defaultPeriod
+}: IndexProps) {
     const [selectedPeriod, setSelectedPeriod] = useState<Period | undefined>(undefined);
 
     // Chart data for balance
@@ -52,6 +62,10 @@ function Index({ auth, balance, income, expense }: IndexProps) {
                     selectedPeriod={selectedPeriod}
                     setSelectedPeriod={setSelectedPeriod}
                     monthStartDay={auth.tenant.month_start_day}
+                    defaultPeriod={{
+                        startDate: dayjs(defaultPeriod.startDate),
+                        endDate: dayjs(defaultPeriod.endDate),
+                    }}
                 />
             </header>
             <main className="space-y-4">
