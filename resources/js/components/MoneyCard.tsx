@@ -32,12 +32,12 @@ export function MoneyCard({
 }: MoneyCardProps) {
     return (
         <Card className="relative">
-            <div className="absolute bottom-0 mb-0 opacity-75 w-full h-[80%] start-0">
+            <div className="absolute bottom-1 mb-0 opacity-75 w-full h-[80%] start-0">
                 <ChartContainer config={{}} className="w-full h-[4.5rem]">
                     <AreaChart
                         accessibilityLayer
                         data={chartData}
-                        margin={{ left: 0, right: 0, top: 10, bottom: 10 }}
+                        margin={{ left: 0, right: 0, top: 10, bottom: 2 }}
                     >
                         <defs>
                             <linearGradient id={`fill${dataKey}`} x1="0" y1="0" x2="0" y2="1">

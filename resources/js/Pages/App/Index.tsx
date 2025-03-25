@@ -26,10 +26,10 @@ function Index({ auth, balance, income, expense }: IndexProps) {
 
     // Chart data for income
     const incomeChartData = [
-        { month: 1, income: 500 },
-        { month: 2, income: 1000 },
+        { month: 1, income: 100 },
+        { month: 2, income: 500 },
         { month: 3, income: 0 },
-        { month: 4, income: 0 },
+        { month: 4, income: 500 },
         { month: 5, income: 0 },
         { month: 6, income: 0 },
     ];
