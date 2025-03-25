@@ -22,7 +22,10 @@ function Index({
     expense,
     defaultPeriod
 }: IndexProps) {
-    const [selectedPeriod, setSelectedPeriod] = useState<Period | undefined>(undefined);
+    const [selectedPeriod, setSelectedPeriod] = useState<Period>({
+        startDate: dayjs(defaultPeriod.startDate),
+        endDate: dayjs(defaultPeriod.endDate),
+    });
 
     // Chart data for balance
     const balanceChartData = [
@@ -62,10 +65,6 @@ function Index({
                     selectedPeriod={selectedPeriod}
                     setSelectedPeriod={setSelectedPeriod}
                     monthStartDay={auth.tenant.month_start_day}
-                    defaultPeriod={{
-                        startDate: dayjs(defaultPeriod.startDate),
-                        endDate: dayjs(defaultPeriod.endDate),
-                    }}
                 />
             </header>
             <main className="space-y-4">

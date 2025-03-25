@@ -13,16 +13,25 @@ class HomeController extends Controller
     {
         /** @var Tenant $tenant */
         $tenant = tenant();
-        $monthStartDay = $tenant->month_start_day ?? 27;
-        $today = Carbon::now();
 
-        if ($today->day < $monthStartDay) {
-            $startDate = $today->copy()->subMonth()->day($monthStartDay)->startOfDay();
+        $startDate = $request->get('startDate');
+        $endDate = $request->get('endDate');
+
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate)->startOfDay();
+            $endDate = Carbon::parse($endDate)->endOfDay();
         } else {
-            $startDate = $today->copy()->day($monthStartDay)->startOfDay();
-        }
+            $monthStartDay = $tenant->month_start_day ?? 27;
+            $today = Carbon::now();
 
-        $endDate = $startDate->copy()->addMonth()->startOfDay();
+            if ($today->day < $monthStartDay) {
+                $startDate = $today->copy()->subMonth()->day($monthStartDay)->startOfDay();
+            } else {
+                $startDate = $today->copy()->day($monthStartDay)->startOfDay();
+            }
+
+            $endDate = $startDate->copy()->addMonth()->subSecond();
+        }
 
         return Inertia::render('App/Index', [
             'balance' => 0,

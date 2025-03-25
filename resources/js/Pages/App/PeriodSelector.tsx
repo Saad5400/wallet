@@ -4,25 +4,21 @@ import "dayjs/locale/ar";
 import { Period } from "@/types";
 
 interface PeriodSelectorProps {
-    selectedPeriod?: Period;
+    selectedPeriod: Period;
     setSelectedPeriod: (period: Period) => void;
     monthStartDay?: number;
-    defaultPeriod: Period;
 }
 
 const PeriodSelector: React.FC<PeriodSelectorProps> = ({
     selectedPeriod,
     setSelectedPeriod,
     monthStartDay = 27,
-    defaultPeriod,
 }) => {
-    const currentPeriod = selectedPeriod || defaultPeriod;
-
     const periodLabel = useMemo(() => {
-        const start = currentPeriod.startDate.locale('ar');
-        const end = currentPeriod.endDate.locale('ar');
+        const start = selectedPeriod.startDate.locale('ar');
+        const end = selectedPeriod.endDate.locale('ar');
 
-        const defaultEndDate = start.clone().add(1, 'month').startOf('day');
+        const defaultEndDate = start.clone().add(1, 'month').subtract(1, 'second');
         const isDefaultFullMonth = start.date() === monthStartDay && end.isSame(defaultEndDate, 'day');
 
         if (isDefaultFullMonth) {
@@ -54,12 +50,12 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
         const startFormat = start.format('MMMM D YYYY');
         const endFormat = end.format('MMMM D YYYY');
         return `${startFormat} - ${endFormat}`;
-    }, [currentPeriod, monthStartDay]);
+    }, [selectedPeriod, monthStartDay]);
 
 
     return (
         <Button
-            onClick={() => console.log('Open calendar or range picker', currentPeriod)}
+            onClick={() => console.log('Open calendar or range picker', selectedPeriod)}
             variant='card'
         >
             {periodLabel}
