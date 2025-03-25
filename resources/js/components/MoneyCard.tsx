@@ -5,7 +5,7 @@ import { ChartContainer } from "@/components/ui/chart";
 
 // Define the chart data interface
 interface ChartData {
-    month: number;
+    date: number;
     [key: string]: number;
 }
 

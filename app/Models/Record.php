@@ -21,6 +21,7 @@ class Record extends Model
         'ignored',
         'amount',
         'description',
+        'occurred_at',
     ];
 
     protected $casts = [

@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->string('description')->nullable();
             $table->string('type');
             $table->boolean('ignored')->default(false);
+            $table->timestamp('recorded_at')->useCurrent();
 
             $table->foreign('tenant_id')->references('id')->on('tenants');
         });
