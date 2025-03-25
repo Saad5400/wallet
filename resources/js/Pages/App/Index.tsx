@@ -63,7 +63,7 @@ function Index({ auth, balance, income, expense }: IndexProps) {
                     dataKey="balance"
                     size="lg"
                 />
-                <section className="grid grid-cols-2 gap-2">
+                <section className="grid grid-cols-2 gap-4">
                     <MoneyCard
                         description="الإيرادات"
                         color="var(--success)"

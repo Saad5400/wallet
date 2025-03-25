@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('tenant_id');
             $table->foreignId('category_id')->constrained();
             $table->string('name');
-            $table->string('color');
-            $table->string('icon');
 
             $table->foreign('tenant_id')->references('id')->on('tenants');
         });

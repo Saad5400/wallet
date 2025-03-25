@@ -12,6 +12,7 @@ class Account extends Model
     use BelongsToTenant;
 
     protected $fillable = [
+        'tenant_id',
         'name',
         'cashback_rate',
     ];

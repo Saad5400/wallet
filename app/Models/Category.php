@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\RecordType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Category extends Model
@@ -11,6 +12,7 @@ class Category extends Model
     use BelongsToTenant;
 
     protected $fillable = [
+        'tenant_id',
         'name',
         'type',
         'color',
@@ -21,12 +23,12 @@ class Category extends Model
         'type' => RecordType::class,
     ];
 
-    public function subCategories()
+    public function subCategories(): HasMany
     {
         return $this->hasMany(SubCategory::class);
     }
 
-    public function records()
+    public function records(): HasMany
     {
         return $this->hasMany(Record::class);
     }

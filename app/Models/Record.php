@@ -12,6 +12,7 @@ class Record extends Model
     use BelongsToTenant;
 
     protected $fillable = [
+        'tenant_id',
         'user_id',
         'account_id',
         'category_id',

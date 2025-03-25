@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('tenant_id');
             $table->string('name');
             $table->string('type');
-            $table->string('color');
-            $table->string('icon');
+            $table->string('color')->nullable();
+            $table->string('icon')->nullable();
 
             $table->foreign('tenant_id')->references('id')->on('tenants');
         });
