@@ -16,7 +16,8 @@ class HomeController extends Controller
 
         return Inertia::render('App/Index', [
             'balance' => $tenant->balance,
-            'income' => $tenant->records->where('type', 'income')->sum('amount'),
+            'income' => 1341,
+            'expense' => 123,
         ]);
     }
 }
