@@ -7,7 +7,10 @@ import dayjs, { Dayjs } from "dayjs";
 
 interface AmountWithChart {
     value: number;
-    chartData: { date: number; value: number }[];
+    chartData: {
+        month: number;
+        [key: string]: number;
+    }[];
 }
 
 interface IndexProps extends PageProps {
@@ -31,6 +34,8 @@ function Index({
         startDate: dayjs(defaultPeriod.startDate),
         endDate: dayjs(defaultPeriod.endDate),
     });
+
+    console.log(balance, income, expense);
 
     return (
         <div className="space-y-4">

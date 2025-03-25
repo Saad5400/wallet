@@ -244,7 +244,6 @@ class Tenant extends BaseTenant implements TenantContract
         });
     }
 
-
     public function users(): MorphToMany
     {
         return $this->morphedByMany(User::class, User::$morphName, User::$tenantPivotTable, User::$tenantForeignKey, 'tenantable_id');
