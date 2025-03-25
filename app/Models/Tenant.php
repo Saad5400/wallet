@@ -269,11 +269,4 @@ class Tenant extends BaseTenant implements TenantContract
     {
         return $this->hasMany(Record::class);
     }
-
-    public function balance(): Attribute
-    {
-        return Attribute::make(function () {
-            return $this->accounts->sum('balance');
-        });
-    }
 }

@@ -8,16 +8,15 @@ use Inertia\Inertia;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-
         /** @var Tenant $tenant */
         $tenant = tenant();
-
+        
         return Inertia::render('App/Index', [
-            'balance' => $tenant->balance,
-            'income' => 1341,
-            'expense' => 123,
+            'balance' => 0,
+            'income' => 0,
+            'expense' => 0,
         ]);
     }
 }

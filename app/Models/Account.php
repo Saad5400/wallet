@@ -21,11 +21,4 @@ class Account extends Model
     {
         return $this->hasMany(Record::class);
     }
-
-    public function balance(): Attribute
-    {
-        return Attribute::make(function () {
-            return $this->records->sum('amount');
-        });
-    }
 }
