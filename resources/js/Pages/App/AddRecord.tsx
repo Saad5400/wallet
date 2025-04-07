@@ -21,6 +21,11 @@ import { cn } from "@/lib/utils";
 export default function AddRecord() {
 
     const [recordType, setRecordType] = useState<'expense' | 'income' | 'transfer'>('expense');
+    const [amount, setAmount] = useState<number>();
+    const [account, setAccount] = useState<number>(0);
+    const [category, setCategory] = useState<number>(0);
+    const [subCategory, setSubCategory] = useState<number>(0);
+    const [datetime, setDatetime] = useState<Date>(new Date());
 
     return (
         <Drawer defaultOpen={true}>
@@ -31,6 +36,13 @@ export default function AddRecord() {
             </DrawerTrigger>
             <DrawerContent asChild className="p-2 bg-card [&>*]:py-4 [&>*]:border-b">
                 <form>
+                    <DrawerTitle className="hidden">
+                        إضافة عملية
+                    </DrawerTitle>
+                    <DrawerDescription className="hidden">
+                        يمكنك تحديد نوع العملية والمبلغ والحساب والفئة
+                    </DrawerDescription>
+
                     <ToggleGroup
                         value={recordType}
                         // @ts-ignore
@@ -67,7 +79,14 @@ export default function AddRecord() {
                     <Input
                         dir="ltr"
                         type="number"
-                        placeholder="00.00"
+                        placeholder="0.00"
+                        value={amount}
+                        onChange={(e) => {
+                            const value = parseFloat(e.target.value);
+                            if (!isNaN(value)) {
+                                setAmount(value);
+                            }
+                        }}
                         className={cn(
                             "bg-transparent border-0 text-5xl text-center w-full !py-12",
                             recordType === 'expense' && 'text-destructive',
@@ -106,40 +125,56 @@ export default function AddRecord() {
                             <ToggleGroupItem
                                 value="0"
                             >
-                                <span>تكسي</span>
                                 <Icon icon='material-symbols:local-taxi' className="!size-6" />
+                                <span>تكسي</span>
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value="1"
                             >
-                                <span>تكسي</span>
                                 <Icon icon='material-symbols:local-taxi' className="!size-6" />
+
+                                <span>تكسي</span>
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value="2"
                             >
-                                <span>تكسي</span>
                                 <Icon icon='material-symbols:local-taxi' className="!size-6" />
+
+                                <span>تكسي</span>
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value="3"
                             >
-                                <span>تكسي</span>
                                 <Icon icon='material-symbols:local-taxi' className="!size-6" />
+
+                                <span>تكسي</span>
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value="4"
                             >
-                                <span>تكسي</span>
                                 <Icon icon='material-symbols:local-taxi' className="!size-6" />
+
+                                <span>تكسي</span>
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value="5"
                             >
-                                <span>تكسي</span>
                                 <Icon icon='material-symbols:local-taxi' className="!size-6" />
+                                <span>تكسي</span>
                             </ToggleGroupItem>
                         </ToggleGroup>
+                    </section>
+
+                    <section>
+                        <Input
+                            type="datetime-local"
+                            className="w-full border-none"
+                            value={datetime.toISOString().slice(0, 16)}
+                            onChange={(e) => {
+                                const date = new Date(e.target.value);
+                                setDatetime(date);
+                            }}
+                        />
                     </section>
                 </form>
             </DrawerContent>

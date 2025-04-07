@@ -35,8 +35,6 @@ function Index({
         endDate: dayjs(defaultPeriod.endDate),
     });
 
-    console.log(balance, income, expense);
-
     return (
         <div className="space-y-4">
             <header className="flex items-center justify-between">

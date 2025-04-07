@@ -40,7 +40,7 @@ function NavButton({
 
 export default function Navbar() {
     return (
-        <nav className="w-full bg-card border-t-1 fixed bottom-0 px-6 pb-6 pt-2 flex flex-row justify-between" style={{ zIndex: 10, viewTransitionName: 'bottom-navbar' }}>
+        <nav className="w-full bg-card border-t-1 absolute bottom-0 left-0 px-6 pb-6 pt-2 flex flex-row justify-between" style={{ zIndex: 10, viewTransitionName: 'bottom-navbar' }}>
             <NavButton routeName="home" iconName="material-symbols:home-outline-rounded" text="الرئيسية" />
             <NavButton routeName="records" iconName="material-symbols:arrow-split-rounded" text="العمليات" />
             <NavBox><AddRecord /></NavBox>
