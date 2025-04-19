@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\RecordType;
 use App\Models\Tenant;
+use App\Models\Category;
 use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
@@ -35,6 +36,19 @@ class HomeController extends Controller
             ->where('type', RecordType::expense)
             ->sum('amount');
 
+        // Top 5 expense categories within the current period
+        $expenseCategories = Category::where('tenant_id', $tenant->id)
+            ->where('type', RecordType::expense)
+            ->has('records')
+            ->withSum(['records as total' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('occurred_at', [$startDate, $endDate])
+                      ->where('type', RecordType::expense);
+            }], 'amount')
+            ->orderByDesc('total')
+            ->limit(7)
+            ->get()
+            ->map(fn ($cat) => ['name' => $cat->name, 'total' => (float) $cat->total]);
+
         // Generate cumulative chart data for a 30-day period ending at $endDate
         [$balanceChartData, $incomeChartData, $expenseChartData] = $this->generateChartData($tenant, $startDate, $endDate);
 
@@ -55,6 +69,7 @@ class HomeController extends Controller
                 'startDate' => $startDate->toISOString(),
                 'endDate' => $endDate->toISOString(),
             ],
+            'expenseCategories' => $expenseCategories,
         ]);
     }
 
