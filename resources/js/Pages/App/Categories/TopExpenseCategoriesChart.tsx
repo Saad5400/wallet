@@ -28,12 +28,18 @@ export function TopExpenseCategoriesChart({ data, startDate, endDate }: TopExpen
 					<ResponsiveContainer width="100%" height={data.length * 50}>
 						<BarChart data={data} layout="vertical">
 							<CartesianGrid horizontal={false} />
-							<YAxis dataKey="name" type="category" hide />
+							<YAxis
+								dataKey="name"
+								type="category"
+								axisLine={false}
+								tickLine={false}
+								orientation="left"
+								tick={{ fontSize: 8, textAnchor: 'start', width: 120 }}
+								width={80}
+							/>
 							<XAxis dataKey="total" type="number" hide />
 							<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
 							<Bar dataKey="total" layout="vertical" fill="var(--destructive)" radius={4}>
-								<LabelList dataKey="name" position="insideLeft" offset={100} className="fill-[--background]" fontSize={12} />
-								<LabelList dataKey="total" position="insideRight" offset={-12} className="fill-foreground" fontSize={12} />
 							</Bar>
 						</BarChart>
 					</ResponsiveContainer>

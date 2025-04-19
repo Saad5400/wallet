@@ -45,7 +45,7 @@ class HomeController extends Controller
                       ->where('type', RecordType::expense);
             }], 'amount')
             ->orderByDesc('total')
-            ->limit(7)
+            ->limit(6)
             ->get()
             ->map(fn ($cat) => ['name' => $cat->name, 'total' => (float) $cat->total]);
 
