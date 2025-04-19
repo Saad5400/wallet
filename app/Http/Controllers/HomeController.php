@@ -40,7 +40,7 @@ class HomeController extends Controller
         $cacheKey = "tenant:{$tenant->id}:expenseCategoriesWithSubs:{$startDate->toDateString()}:{$endDate->toDateString()}";
         
         // Try to get data from cache first
-        $expenseCategories = Cache::remember($cacheKey, now()->addSecond(), function () use ($tenant, $startDate, $endDate) {
+        $expenseCategories = Cache::remember($cacheKey, now()->addHour(), function () use ($tenant, $startDate, $endDate) {
             // Get top expense categories
             return Category::where('tenant_id', $tenant->id)
                 ->where('type', RecordType::expense)
