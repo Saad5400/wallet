@@ -2,9 +2,27 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+type AffixProps = {
+  children: React.ReactNode;
+  position: 'prefix' | 'postfix';
+};
+
+const Affix: React.FC<AffixProps> = ({ children, position }) => {
+  return (
+    <span
+      className={cn(
+        "flex items-center justify-center h-12 border rounded-md text-muted min-w-12 bg-secondary",
+        position === 'prefix' ? "border-e-0 rounded-e-none" : "border-s-0 rounded-s-none"
+      )}
+    >
+      {children}
+    </span>
+  );
+};
+
 type InputProps = React.ComponentProps<"input"> & {
-  prefix?: string;
-  postfix?: string;
+  prefix?: React.ReactNode;
+  postfix?: React.ReactNode;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -12,13 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-row items-center">
 
-        {prefix && (
-          <span
-            className="flex items-center justify-center h-12 border rounded-md border-e-0 rounded-e-none text-muted min-w-12 bg-secondary"
-          >
-            {prefix}
-          </span>
-        )}
+        {prefix && <Affix position="prefix">{prefix}</Affix>}
 
         <input
           type={type}
@@ -32,13 +44,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
 
-        {postfix && (
-          <span
-            className="flex items-center justify-center h-12 border rounded-md border-s-0 rounded-s-none text-muted min-w-12 bg-secondary"
-          >
-            {postfix}
-          </span>
-        )}
+        {postfix && <Affix position="postfix">{postfix}</Affix>}
       </div>
     )
   }
