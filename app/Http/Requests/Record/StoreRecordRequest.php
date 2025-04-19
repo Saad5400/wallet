@@ -5,9 +5,23 @@ namespace App\Http\Requests\Record;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class StoreRecordRequest extends FormRequest
 {
+    /**
+     * Prepare input data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->filled('occurred_at')) {
+            $dt = $this->input('occurred_at');
+            $this->merge([
+                'occurred_at' => Carbon::parse($dt)->format('Y-m-d H:i:s'),
+            ]);
+        }
+    }
+
     public function authorize(): bool
     {
         return Auth::check();
