@@ -13,7 +13,7 @@ interface AmountWithChart {
     }[];
 }
 
-interface IndexProps extends PageProps {
+type IndexProps = PageProps & {
     balance: AmountWithChart;
     income: AmountWithChart;
     expense: AmountWithChart;

@@ -8,10 +8,11 @@ import { Icon } from '@iconify/react';
 
 interface CreateSubCategoryDialogProps {
   categoryId: number;
+  categoryName?: string;
   onCreated: (subCategoryId: number) => void;
 }
 
-export default function CreateSubCategoryDialog({ categoryId, onCreated }: CreateSubCategoryDialogProps) {
+export default function CreateSubCategoryDialog({ categoryId, categoryName, onCreated }: CreateSubCategoryDialogProps) {
   const [open, setOpen] = useState(false);
   const { data, setData, post, processing, errors, reset } = useForm<{ name: string; category_id: number }>({ name: '', category_id: categoryId });
 
@@ -41,8 +42,12 @@ export default function CreateSubCategoryDialog({ categoryId, onCreated }: Creat
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>إضافة تصنيف فرعي</DialogTitle>
-          <DialogDescription>أنشئ تصنيفًا فرعيًا جديدًا</DialogDescription>
+          <DialogTitle>
+            {categoryName ? `إضافة تصنيف فرعي لـ ${categoryName}` : 'إضافة تصنيف فرعي'}
+          </DialogTitle>
+          <DialogDescription>
+            {categoryName ? `أنشئ تصنيفًا فرعيًا جديدًا تحت ${categoryName}` : 'أنشئ تصنيفًا فرعيًا جديدًا'}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="flex flex-col gap-2">

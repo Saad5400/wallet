@@ -43,16 +43,22 @@ export default function AddRecord() {
 
 	function submit(e: React.FormEvent) {
 		e.preventDefault();
-		router.post(route('record.store'), {
+		const data: any = {
 			type: recordType,
 			amount,
 			account_id: account,
-			category_id: category,
-			sub_category_id: subCategory,
 			occurred_at: datetime.toISOString(),
 			description,
-		}, {
-			onSuccess: () => setOpen(false),
+		};
+		if (recordType !== 'transfer') {
+			data.category_id = category;
+			data.sub_category_id = subCategory;
+		}
+		router.post(route('record.store'), data, {
+			onSuccess: () => {
+				setAmount('');
+				setOpen(false);
+			},
 		});
 	}
 
@@ -81,7 +87,7 @@ export default function AddRecord() {
 					{errors && Object.keys(errors).length > 0 && (
 						<div className="space-y-1 text-sm text-destructive">
 							{Object.entries(errors).map(([field, msgs]) => (
-								<p key={field}>{msgs.join(' ')}</p>
+								<p key={field}>{Array.isArray(msgs) ? msgs.join(' ') : msgs}</p>
 							))}
 						</div>
 					)}
@@ -89,7 +95,13 @@ export default function AddRecord() {
 					<ToggleGroup
 						value={recordType}
 						// @ts-ignore
-						onValueChange={(value) => ['expense', 'income', 'transfer'].includes(value) && setRecordType(value)}
+						onValueChange={(value) => {
+							if (['expense', 'income', 'transfer'].includes(value)) {
+								setRecordType(value as RecordType);
+								setCategory(-1);
+								setSubCategory(-1);
+							}
+						}}
 						size='lg'
 						variant='bottom'
 						type="single"
@@ -143,61 +155,65 @@ export default function AddRecord() {
 					</section>
 
 					{/* Category selection drawer */}
-					<section>
-						<Drawer open={catOpen} onOpenChange={setCatOpen}>
-							<DrawerTrigger asChild>
-								<Button variant="ghost" className="flex items-center justify-between w-full">
-									<span>{tenant.categories.find(c => c.id === category)?.name || 'Select Category'}</span>
-									<Icon icon="material-symbols:category-rounded" className="size-6" />
-								</Button>
-							</DrawerTrigger>
-							<DrawerContent className="p-2 space-y-2 bg-card">
-								<VisuallyHidden>
-									<DrawerHeader>
-										<DrawerTitle>اختيار التصنيف</DrawerTitle>
-										<DrawerDescription>يمكنك اختيار التصنيف الذي تريد استخدامه او إضافة تصنيف جديد</DrawerDescription>
-									</DrawerHeader>
-								</VisuallyHidden>
-								<div className="flex flex-col gap-2 max-h-[80dvh] overflow-y-auto">
-									{tenant.categories.filter(c => c.type === recordType).map(c => (
-										<DrawerClose asChild key={c.id}>
-											<Button
-												variant={c.id === category ? 'secondary' : 'ghost'}
-												onClick={() => { setCategory(c.id); setCatOpen(false); }}
-											>
-												{c.name}
-											</Button>
-										</DrawerClose>
-									))}
-									<div className="pt-2 border-t border-gray-200">
-										<CreateCategoryDialog type={recordType} onCreated={id => { setCategory(id); setCatOpen(false); }} />
+					{recordType !== 'transfer' && (
+						<section>
+							<Drawer open={catOpen} onOpenChange={setCatOpen}>
+								<DrawerTrigger asChild>
+									<Button variant="ghost" className="flex items-center justify-between w-full">
+										<span>{tenant.categories.find(c => c.id === category)?.name || 'اختر تصنيف'}</span>
+										<Icon icon="material-symbols:category-rounded" className="size-6" />
+									</Button>
+								</DrawerTrigger>
+								<DrawerContent className="p-2 space-y-2 bg-card">
+									<VisuallyHidden>
+										<DrawerHeader>
+											<DrawerTitle>اختيار التصنيف</DrawerTitle>
+											<DrawerDescription>يمكنك اختيار التصنيف الذي تريد استخدامه او إضافة تصنيف جديد</DrawerDescription>
+										</DrawerHeader>
+									</VisuallyHidden>
+									<div className="flex flex-col gap-2 max-h-[80dvh] overflow-y-auto">
+										{tenant.categories.filter(c => c.type === recordType).map(c => (
+											<DrawerClose asChild key={c.id}>
+												<Button
+													variant={c.id === category ? 'secondary' : 'ghost'}
+													onClick={() => { setCategory(c.id); setCatOpen(false); }}
+												>
+													{c.name}
+												</Button>
+											</DrawerClose>
+										))}
+										<div className="pt-2 border-t border-gray-200">
+											<CreateCategoryDialog type={recordType} onCreated={id => { setCategory(id); setCatOpen(false); }} />
+										</div>
 									</div>
-								</div>
-							</DrawerContent>
-						</Drawer>
-					</section>
+								</DrawerContent>
+							</Drawer>
+						</section>
+					)}
 
 					{/* Subcategory selection and add */}
-					<section>
-						<ToggleGroup
-							value={subCategory.toString()}
-							onValueChange={(v) => setSubCategory(Number(v))}
-							type="single"
-							variant="outline"
-							size="lg"
-							className="flex flex-row flex-wrap gap-2 text-xs"
-						>
-							<CreateSubCategoryDialog categoryId={category} onCreated={(id: number) => setSubCategory(id)} />
-							{(tenant.categories.find(c => c.id === category)?.sub_categories || []).map(sc => (
-								<ToggleGroupItem
-									className="flex-grow"
-									key={sc.id} value={sc.id.toString()}
-								>
-									{sc.name}
-								</ToggleGroupItem>
-							))}
-						</ToggleGroup>
-					</section>
+					{recordType !== 'transfer' && category !== -1 && (
+						<section>
+							<ToggleGroup
+								value={subCategory.toString()}
+								onValueChange={(v) => setSubCategory(Number(v))}
+								type="single"
+								variant="outline"
+								size="lg"
+								className="flex flex-row flex-wrap gap-2 text-xs"
+							>
+								<CreateSubCategoryDialog categoryId={category} categoryName={tenant.categories.find(c => c.id === category)?.name} onCreated={(id: number) => setSubCategory(id)} />
+								{(tenant.categories.find(c => c.id === category)?.sub_categories || []).map(sc => (
+									<ToggleGroupItem
+										className="flex-grow"
+										key={sc.id} value={sc.id.toString()}
+									>
+										{sc.name}
+									</ToggleGroupItem>
+								))}
+							</ToggleGroup>
+						</section>
+					)}
 
 					{/* Description optional */}
 					<section>
