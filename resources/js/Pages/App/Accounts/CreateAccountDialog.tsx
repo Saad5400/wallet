@@ -37,17 +37,18 @@ export default function CreateAccountDialog({ onCreated }: CreateAccountDialogPr
 				<DialogHeader>
 					<DialogTitle>إضافة حساب جديد</DialogTitle>
 				</DialogHeader>
-				<form onSubmit={submit} className="space-y-4 w-full h-full">
+				<form onSubmit={submit} className="w-full h-full space-y-4">
 					<div className='flex flex-col gap-2 mt-4'>
 						<Label htmlFor="name">اسم الحساب</Label>
 						<Input className='w-full' id="name" autoComplete='off' value={data.name} onChange={e => setData('name', e.target.value)} required />
-						{errors.name && <p className="text-destructive text-sm mt-1">{errors.name}</p>}
+						{errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
 					</div>
 					<div className='flex flex-col gap-2'>
 						<Label htmlFor="cashback_rate">
 							نسبة الاسترجاع (Cashback)
 						</Label>
 						<Input
+							postfix='%'
 							className='w-full'
 							id="cashback_rate"
 							type="number"
@@ -55,7 +56,7 @@ export default function CreateAccountDialog({ onCreated }: CreateAccountDialogPr
 							value={data.cashback_rate}
 							onChange={e => setData('cashback_rate', e.target.value)}
 						/>
-						{errors.cashback_rate && <p className="text-destructive text-sm mt-1">{errors.cashback_rate}</p>}
+						{errors.cashback_rate && <p className="mt-1 text-sm text-destructive">{errors.cashback_rate}</p>}
 					</div>
 					<div className="flex justify-end space-x-2">
 						<DialogClose asChild>
