@@ -17,11 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export default function AddRecord() {
 
     const [recordType, setRecordType] = useState<'expense' | 'income' | 'transfer'>('expense');
-    const [amount, setAmount] = useState<number>();
+    const [amount, setAmount] = useState<number | string>(''); // Changed to string to fix controlled input warning
     const [account, setAccount] = useState<number>(0);
     const [category, setCategory] = useState<number>(0);
     const [subCategory, setSubCategory] = useState<number>(0);
@@ -34,15 +35,18 @@ export default function AddRecord() {
                     <Icon icon='material-symbols:add-2-rounded' className="size-8" />
                 </Button>
             </DrawerTrigger>
-            <DrawerContent asChild className="p-2 bg-card [&>*]:py-4 [&>*]:border-b">
-                <form>
-                    <DrawerTitle className="hidden">
+            <VisuallyHidden>
+                <DrawerHeader>
+                    <DrawerTitle>
                         إضافة عملية
                     </DrawerTitle>
-                    <DrawerDescription className="hidden">
+                    <DrawerDescription>
                         يمكنك تحديد نوع العملية والمبلغ والحساب والفئة
                     </DrawerDescription>
-
+                </DrawerHeader>
+            </VisuallyHidden>
+            <DrawerContent asChild className="p-2 bg-card [&>*]:py-4 [&>*]:border-b">
+                <form>
                     <ToggleGroup
                         value={recordType}
                         // @ts-ignore
@@ -82,10 +86,8 @@ export default function AddRecord() {
                         placeholder="0.00"
                         value={amount}
                         onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value)) {
-                                setAmount(value);
-                            }
+                            const value = e.target.value;
+                            setAmount(value === '' ? '' : parseFloat(value));
                         }}
                         className={cn(
                             "bg-transparent border-0 text-5xl text-center w-full !py-12",
@@ -176,6 +178,13 @@ export default function AddRecord() {
                             }}
                         />
                     </section>
+
+                    <DrawerFooter className="flex flex-row justify-between">
+                        <Button type="submit" className="flex-1">حفظ</Button>
+                        <DrawerClose asChild>
+                            <Button variant="ghost" className="flex-1">إلغاء</Button>
+                        </DrawerClose>
+                    </DrawerFooter>
                 </form>
             </DrawerContent>
         </Drawer >
