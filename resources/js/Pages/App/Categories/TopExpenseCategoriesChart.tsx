@@ -38,8 +38,15 @@ export function TopExpenseCategoriesChart({ data, startDate, endDate }: TopExpen
 								width={80}
 							/>
 							<XAxis dataKey="total" type="number" hide />
-							<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+							{/* <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} /> */}
 							<Bar dataKey="total" layout="vertical" fill="var(--destructive)" radius={4}>
+								<LabelList
+									dataKey="total"
+									position="right"
+									fontSize={10}
+									fill="var(--foreground)"
+									style={{ textAnchor: 'middle' }}
+								/>
 							</Bar>
 						</BarChart>
 					</ResponsiveContainer>
