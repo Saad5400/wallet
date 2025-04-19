@@ -8,23 +8,23 @@ import {createRoot, hydrateRoot} from 'react-dom/client';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-if (document.startViewTransition) {
-    document.addEventListener("inertia:start", () => {
-        document.startViewTransition(() => {
-            return new Promise<void>((resolve) => {
-                document.addEventListener(
-                    "inertia:finish",
-                    () => {
-                        setTimeout(() => {
-                            resolve();
-                        });
-                    },
-                    {once: true},
-                );
-            });
-        });
-    });
-}
+// if (document.startViewTransition) {
+//     document.addEventListener("inertia:start", () => {
+//         document.startViewTransition(() => {
+//             return new Promise<void>((resolve) => {
+//                 document.addEventListener(
+//                     "inertia:finish",
+//                     () => {
+//                         setTimeout(() => {
+//                             resolve();
+//                         });
+//                     },
+//                     {once: true},
+//                 );
+//             });
+//         });
+//     });
+// }
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

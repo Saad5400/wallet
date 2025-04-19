@@ -22,7 +22,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { ar } from "react-day-picker/locale";
 import { useAuth } from '@/hooks/useAuth';
 import { PageProps, RecordType, Tenant, User } from "@/types";
-import AccountDrawer from "./AccountDrawer";
+import AccountDrawer from "./Accounts/AccountDrawer";
 
 export default function AddRecord() {
 
@@ -102,11 +102,13 @@ export default function AddRecord() {
 						)}
 					/>
 
-					<AccountDrawer
-						accounts={tenant.accounts}
-						selectedAccount={account}
-						onSelect={setAccount}
-					/>
+					<section>
+						<AccountDrawer
+							accounts={tenant.accounts}
+							selectedAccount={account}
+							onSelect={setAccount}
+						/>
+					</section>
 
 					<section>
 						<Button

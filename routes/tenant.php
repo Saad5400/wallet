@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AccountController;
 use App\Http\Middleware\AuthorizeUserToTenant;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
@@ -33,6 +34,7 @@ Route::group([
     Route::get('/records', [HomeController::class, 'index'])->name('records');
 
     Route::get('/accounts', [HomeController::class, 'index'])->name('accounts');
+    Route::post('/accounts', [AccountController::class, 'store'])->name('account.store');
 
     Route::get('/settings', [HomeController::class, 'index'])->name('settings');
 });
