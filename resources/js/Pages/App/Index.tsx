@@ -3,15 +3,30 @@ import { PageProps, Period } from "@/types";
 import React, { useState } from "react";
 import PeriodSelector from "./PeriodSelector";
 import { MoneyCard } from "@/components/MoneyCard";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import TopExpenseCategoriesChart from "./Categories/TopExpenseCategoriesChart";
 
 interface AmountWithChart {
 	value: number;
 	chartData: {
-		month: number;
-		[key: string]: number;
+		month: string;
+		[key: string]: number | string;
 	}[];
+}
+
+// Define the subcategory data structure
+interface SubCategoryData {
+	id: number;
+	name: string;
+	total: number;
+}
+
+// Define the category data structure with subcategories
+interface CategoryData {
+	id: number;
+	name: string;
+	total: number;
+	subCategories: SubCategoryData[];
 }
 
 type IndexProps = PageProps & {
@@ -22,7 +37,7 @@ type IndexProps = PageProps & {
 		startDate: string;
 		endDate: string;
 	};
-	expenseCategories: { name: string; total: number }[];
+	expenseCategories: CategoryData[];
 }
 
 function Index({

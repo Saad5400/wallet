@@ -36,18 +36,55 @@ class HomeController extends Controller
             ->where('type', RecordType::expense)
             ->sum('amount');
 
-        // Top 5 expense categories within the current period
-        $expenseCategories = Category::where('tenant_id', $tenant->id)
-            ->where('type', RecordType::expense)
-            ->has('records')
-            ->withSum(['records as total' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('occurred_at', [$startDate, $endDate])
-                      ->where('type', RecordType::expense);
-            }], 'amount')
-            ->orderByDesc('total')
-            ->limit(6)
-            ->get()
-            ->map(fn ($cat) => ['name' => $cat->name, 'total' => (float) $cat->total]);
+        // Cache key for expense categories data with subcategories
+        $cacheKey = "tenant:{$tenant->id}:expenseCategoriesWithSubs:{$startDate->toDateString()}:{$endDate->toDateString()}";
+        
+        // Try to get data from cache first
+        $expenseCategories = Cache::remember($cacheKey, now()->addSecond(), function () use ($tenant, $startDate, $endDate) {
+            // Get top expense categories
+            return Category::where('tenant_id', $tenant->id)
+                ->where('type', RecordType::expense)
+                ->has('records')
+                ->withSum(['records as total' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('occurred_at', [$startDate, $endDate])
+                          ->where('type', RecordType::expense);
+                }], 'amount')
+                ->with(['subCategories' => function ($query) {
+                    $query->withSum('records', 'amount')
+                          ->orderByDesc('records_sum_amount');
+                }])
+                ->orderByDesc('total')
+                ->limit(6)
+                ->get()
+                ->map(function ($category) use ($startDate, $endDate) {
+                    // Get subcategories with their expense totals for this period
+                    $subCategories = $category->subCategories
+                        ->map(function ($subCategory) use ($startDate, $endDate) {
+                            // Calculate the total for this specific subcategory within the date range
+                            $total = $subCategory->records()
+                                ->whereBetween('occurred_at', [$startDate, $endDate])
+                                ->where('type', RecordType::expense)
+                                ->sum('amount');
+                            
+                            return [
+                                'id' => $subCategory->id,
+                                'name' => $subCategory->name,
+                                'total' => (float) abs($total), // Expense is negative, so we use abs
+                            ];
+                        })
+                        ->filter(function ($subCategory) {
+                            return $subCategory['total'] > 0; // Only include subcategories with expenses
+                        })
+                        ->values();
+                    
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'total' => (float) abs($category->total), // Expense is negative, so we use abs
+                        'subCategories' => $subCategories,
+                    ];
+                });
+        });
 
         // Generate cumulative chart data for a 30-day period ending at $endDate
         [$balanceChartData, $incomeChartData, $expenseChartData] = $this->generateChartData($tenant, $startDate, $endDate);
