@@ -7,7 +7,7 @@ import tenantRoute from "@/lib/tenantRoute";
 
 function NavBox({ children }: { children: React.ReactNode }) {
     return (
-        <div className="size-8 flex items-end justify-center">
+        <div className="flex items-end justify-center size-8">
             {children}
         </div>
     );
@@ -40,7 +40,7 @@ function NavButton({
 
 export default function Navbar() {
     return (
-        <nav className="w-full bg-card border-t-1 absolute bottom-0 left-0 px-6 pb-6 pt-2 flex flex-row justify-between" style={{ zIndex: 10, viewTransitionName: 'bottom-navbar' }}>
+        <nav className="fixed bottom-0 left-0 flex flex-row justify-between w-full px-6 pt-2 pb-6 bg-card border-t-1" style={{ zIndex: 10, viewTransitionName: 'bottom-navbar' }}>
             <NavButton routeName="home" iconName="material-symbols:home-outline-rounded" text="الرئيسية" />
             <NavButton routeName="records" iconName="material-symbols:arrow-split-rounded" text="العمليات" />
             <NavBox><AddRecord /></NavBox>

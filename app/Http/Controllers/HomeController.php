@@ -35,12 +35,19 @@ class HomeController extends Controller
             ->whereBetween('occurred_at', [$startDate, $endDate])
             ->where('type', RecordType::expense)
             ->sum('amount');
+            
+        // Get latest 10 records with account, category, and subcategory info
+        $latestRecords = $tenant->records()
+            ->with(['account', 'category', 'subCategory'])
+            ->orderBy('occurred_at', 'desc')
+            ->limit(10)
+            ->get();
 
         // Cache key for expense categories data with subcategories
         $cacheKey = "tenant:{$tenant->id}:expenseCategoriesWithSubs:{$startDate->toDateString()}:{$endDate->toDateString()}";
         
         // Try to get data from cache first
-        $expenseCategories = Cache::remember($cacheKey, now()->addHour(), function () use ($tenant, $startDate, $endDate) {
+        $expenseCategories = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($tenant, $startDate, $endDate) {
             // Get top expense categories
             return Category::where('tenant_id', $tenant->id)
                 ->where('type', RecordType::expense)
@@ -107,6 +114,7 @@ class HomeController extends Controller
                 'endDate' => $endDate->toISOString(),
             ],
             'expenseCategories' => $expenseCategories,
+            'latestRecords' => $latestRecords,
         ]);
     }
 

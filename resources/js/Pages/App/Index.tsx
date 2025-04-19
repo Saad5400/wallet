@@ -1,10 +1,11 @@
 import AppLayout from "./AppLayout";
-import { PageProps, Period } from "@/types";
+import { PageProps, Period, Record } from "@/types";
 import React, { useState } from "react";
 import PeriodSelector from "./PeriodSelector";
 import { MoneyCard } from "@/components/MoneyCard";
 import dayjs from "dayjs";
 import TopExpenseCategoriesChart from "./Categories/TopExpenseCategoriesChart";
+import LatestRecords from "./Records/LatestRecords";
 
 interface AmountWithChart {
 	value: number;
@@ -38,6 +39,11 @@ type IndexProps = PageProps & {
 		endDate: string;
 	};
 	expenseCategories: CategoryData[];
+	latestRecords: Array<Record & {
+		account: { name: string };
+		category?: { name: string };
+		subCategory?: { name: string };
+	}>;
 }
 
 function Index({
@@ -47,6 +53,7 @@ function Index({
 	expense,
 	defaultPeriod,
 	expenseCategories,
+	latestRecords,
 }: IndexProps) {
 	const [selectedPeriod, setSelectedPeriod] = useState<Period>({
 		startDate: dayjs(defaultPeriod.startDate),
@@ -96,6 +103,9 @@ function Index({
 						startDate={selectedPeriod.startDate}
 						endDate={selectedPeriod.endDate}
 					/>
+				</section>
+				<section>
+					<LatestRecords records={latestRecords} />
 				</section>
 			</main>
 		</div>

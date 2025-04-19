@@ -46,4 +46,5 @@ Route::group([
 
     // Record endpoints
     Route::post('/records', [\App\Http\Controllers\RecordController::class, 'store'])->name('record.store');
+    Route::delete('/records/{record}', [\App\Http\Controllers\RecordController::class, 'destroy'])->name('record.destroy');
 });
