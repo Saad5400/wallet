@@ -23,10 +23,14 @@ import { ar } from "react-day-picker/locale";
 import { useAuth } from '@/hooks/useAuth';
 import { PageProps, RecordType, Tenant, User } from "@/types";
 import AccountDrawer from "./Accounts/AccountDrawer";
+import { router } from '@inertiajs/react';
+import CreateCategoryDialog from '@/Pages/App/Categories/CreateCategoryDialog';
+import CreateSubCategoryDialog from '@/Pages/App/Categories/CreateSubCategoryDialog';
 
 export default function AddRecord() {
 
 	const { user, tenant } = useAuth();
+	const [open, setOpen] = useState(false);
 
 	const [recordType, setRecordType] = useState<RecordType>(user.lastRecord?.type || 'expense');
 	const [amount, setAmount] = useState<number | string>('');
@@ -34,11 +38,27 @@ export default function AddRecord() {
 	const [category, setCategory] = useState<number>(user.lastRecord?.category_id || tenant.categories[0]?.id || -1);
 	const [subCategory, setSubCategory] = useState<number>(user.lastRecord?.sub_category_id || tenant.categories[0]?.sub_categories[0]?.id || -1);
 	const [datetime, setDatetime] = useState<Date>(new Date());
+	const [description, setDescription] = useState<string>(user.lastRecord?.description || '');
+
+	function submit(e: React.FormEvent) {
+		e.preventDefault();
+		router.post(route('record.store'), {
+			type: recordType,
+			amount,
+			account_id: account,
+			category_id: category,
+			sub_category_id: subCategory,
+			occurred_at: datetime.toISOString(),
+			description,
+		}, {
+			onSuccess: () => setOpen(false),
+		});
+	}
 
 	return (
-		<Drawer>
+		<Drawer open={open} onOpenChange={setOpen}>
 			<DrawerTrigger asChild>
-				<Button className="rounded-full size-14">
+				<Button className="rounded-full size-14" onClick={() => setOpen(true)}>
 					<Icon icon='material-symbols:add-2-rounded' className="size-6" />
 				</Button>
 			</DrawerTrigger>
@@ -53,7 +73,7 @@ export default function AddRecord() {
 				</DrawerHeader>
 			</VisuallyHidden>
 			<DrawerContent asChild className="p-2 bg-card space-y-2">
-				<form>
+					<form onSubmit={submit}>
 					<ToggleGroup
 						value={recordType}
 						// @ts-ignore
@@ -110,64 +130,52 @@ export default function AddRecord() {
 						/>
 					</section>
 
-					<section>
-						<Button
-							variant='ghost'
-							className="flex items-center justify-between w-full text-primary"
+					{/* Category selection and add */}
+					<section className="flex w-full overflow-x-auto space-x-2">
+						<ToggleGroup
+							value={category.toString()}
+							onValueChange={(v) => setCategory(Number(v))}
+							type="single"
+							variant="outline"
+							size="lg"
+							className="text-sm flex-1"
 						>
-							<span className="text-sm">مواصلات</span>
-							<Icon icon='material-symbols:category' className="size-6" />
-						</Button>
+							{tenant.categories.filter(c => c.type === recordType).map(c => (
+								<ToggleGroupItem key={c.id} value={c.id.toString()}>
+									{c.name}
+								</ToggleGroupItem>
+							))}
+						</ToggleGroup>
+						<CreateCategoryDialog type={recordType} onCreated={(id: number) => setCategory(id)} />
 					</section>
 
-					<section className="flex w-full overflow-x-auto">
+					{/* Subcategory selection and add */}
+					<section className="flex w-full overflow-x-auto space-x-2">
 						<ToggleGroup
+							value={subCategory.toString()}
+							onValueChange={(v) => setSubCategory(Number(v))}
 							type="single"
-							variant='outline'
-							size='lg'
-							className="text-sm"
+							variant="outline"
+							size="lg"
+							className="text-sm flex-1"
 						>
-							<ToggleGroupItem
-								value="0"
-							>
-								<Icon icon='material-symbols:local-taxi' className="!size-6" />
-								<span>تكسي</span>
-							</ToggleGroupItem>
-							<ToggleGroupItem
-								value="1"
-							>
-								<Icon icon='material-symbols:local-taxi' className="!size-6" />
-
-								<span>تكسي</span>
-							</ToggleGroupItem>
-							<ToggleGroupItem
-								value="2"
-							>
-								<Icon icon='material-symbols:local-taxi' className="!size-6" />
-
-								<span>تكسي</span>
-							</ToggleGroupItem>
-							<ToggleGroupItem
-								value="3"
-							>
-								<Icon icon='material-symbols:local-taxi' className="!size-6" />
-
-								<span>تكسي</span>
-							</ToggleGroupItem>
-							<ToggleGroupItem
-								value="4"
-							>
-								<Icon icon='material-symbols:local-taxi' className="!size-6" />
-
-								<span>تكسي</span>
-							</ToggleGroupItem>
-							<ToggleGroupItem
-								value="5"
-							>
-								<Icon icon='material-symbols:local-taxi' className="!size-6" />
-								<span>تكسي</span>
-							</ToggleGroupItem>
+							{(tenant.categories.find(c => c.id === category)?.sub_categories || []).map(sc => (
+								<ToggleGroupItem key={sc.id} value={sc.id.toString()}>
+									{sc.name}
+								</ToggleGroupItem>
+							))}
 						</ToggleGroup>
+						<CreateSubCategoryDialog categoryId={category} onCreated={(id: number) => setSubCategory(id)} />
+					</section>
+
+					{/* Description optional */}
+					<section>
+						<Input
+							placeholder="وصف (اختياري)"
+							value={description}
+							onChange={e => setDescription(e.target.value)}
+							className="w-full"
+						/>
 					</section>
 
 					<section>
@@ -180,7 +188,7 @@ export default function AddRecord() {
 					</section>
 
 					<DrawerFooter className="flex flex-row justify-between">
-						<Button type="submit" className="flex-1">حفظ</Button>
+						<Button type="submit" className="flex-1" disabled={false}>حفظ</Button>
 						<DrawerClose asChild>
 							<Button variant="ghost" className="flex-1">إلغاء</Button>
 						</DrawerClose>

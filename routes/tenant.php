@@ -37,4 +37,13 @@ Route::group([
     Route::post('/accounts', [AccountController::class, 'store'])->name('account.store');
 
     Route::get('/settings', [HomeController::class, 'index'])->name('settings');
+
+    // Category endpoints
+    Route::post('/categories', [\App\Http\Controllers\CategoryController::class, 'store'])->name('category.store');
+
+    // Subcategory endpoints
+    Route::post('/sub-categories', [\App\Http\Controllers\SubCategoryController::class, 'store'])->name('subCategory.store');
+
+    // Record endpoints
+    Route::post('/records', [\App\Http\Controllers\RecordController::class, 'store'])->name('record.store');
 });
