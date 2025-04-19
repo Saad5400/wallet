@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/react';
+import { Icon } from '@iconify/react';
 
 interface CreateSubCategoryDialogProps {
   categoryId: number;
@@ -34,7 +35,9 @@ export default function CreateSubCategoryDialog({ categoryId, onCreated }: Creat
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full">إضافة تصنيف فرعي</Button>
+        <Button variant="ghost" className="w-10 rounded-lg h-h-full" aria-label="Add subcategory">
+          <Icon icon="material-symbols:add" className="size-6" />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

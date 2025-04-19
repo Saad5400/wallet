@@ -23,7 +23,7 @@ import { ar } from "react-day-picker/locale";
 import { useAuth } from '@/hooks/useAuth';
 import { PageProps, RecordType, Tenant, User } from "@/types";
 import AccountDrawer from "./Accounts/AccountDrawer";
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import CreateCategoryDialog from '@/Pages/App/Categories/CreateCategoryDialog';
 import CreateSubCategoryDialog from '@/Pages/App/Categories/CreateSubCategoryDialog';
 
@@ -31,6 +31,7 @@ export default function AddRecord() {
 
 	const { user, tenant } = useAuth();
 	const [open, setOpen] = useState(false);
+	const [catOpen, setCatOpen] = useState(false);
 
 	const [recordType, setRecordType] = useState<RecordType>(user.lastRecord?.type || 'expense');
 	const [amount, setAmount] = useState<number | string>('');
@@ -55,6 +56,8 @@ export default function AddRecord() {
 		});
 	}
 
+	const { errors } = usePage<{ errors: Record<string, string[]> }>().props;
+
 	return (
 		<Drawer open={open} onOpenChange={setOpen}>
 			<DrawerTrigger asChild>
@@ -72,8 +75,17 @@ export default function AddRecord() {
 					</DrawerDescription>
 				</DrawerHeader>
 			</VisuallyHidden>
-			<DrawerContent asChild className="p-2 bg-card space-y-2">
-					<form onSubmit={submit}>
+			<DrawerContent asChild className="p-2 space-y-2 bg-card">
+				<form onSubmit={submit}>
+					{/* Form errors */}
+					{errors && Object.keys(errors).length > 0 && (
+						<div className="space-y-1 text-sm text-destructive">
+							{Object.entries(errors).map(([field, msgs]) => (
+								<p key={field}>{msgs.join(' ')}</p>
+							))}
+						</div>
+					)}
+
 					<ToggleGroup
 						value={recordType}
 						// @ts-ignore
@@ -130,42 +142,61 @@ export default function AddRecord() {
 						/>
 					</section>
 
-					{/* Category selection and add */}
-					<section className="flex w-full overflow-x-auto space-x-2">
-						<ToggleGroup
-							value={category.toString()}
-							onValueChange={(v) => setCategory(Number(v))}
-							type="single"
-							variant="outline"
-							size="lg"
-							className="text-sm flex-1"
-						>
-							{tenant.categories.filter(c => c.type === recordType).map(c => (
-								<ToggleGroupItem key={c.id} value={c.id.toString()}>
-									{c.name}
-								</ToggleGroupItem>
-							))}
-						</ToggleGroup>
-						<CreateCategoryDialog type={recordType} onCreated={(id: number) => setCategory(id)} />
+					{/* Category selection drawer */}
+					<section>
+						<Drawer open={catOpen} onOpenChange={setCatOpen}>
+							<DrawerTrigger asChild>
+								<Button variant="ghost" className="flex items-center justify-between w-full">
+									<span>{tenant.categories.find(c => c.id === category)?.name || 'Select Category'}</span>
+									<Icon icon="material-symbols:category-rounded" className="size-6" />
+								</Button>
+							</DrawerTrigger>
+							<DrawerContent className="p-2 space-y-2 bg-card">
+								<VisuallyHidden>
+									<DrawerHeader>
+										<DrawerTitle>اختيار التصنيف</DrawerTitle>
+										<DrawerDescription>يمكنك اختيار التصنيف الذي تريد استخدامه او إضافة تصنيف جديد</DrawerDescription>
+									</DrawerHeader>
+								</VisuallyHidden>
+								<div className="flex flex-col gap-2 max-h-[80dvh] overflow-y-auto">
+									{tenant.categories.filter(c => c.type === recordType).map(c => (
+										<DrawerClose asChild key={c.id}>
+											<Button
+												variant={c.id === category ? 'secondary' : 'ghost'}
+												onClick={() => { setCategory(c.id); setCatOpen(false); }}
+											>
+												{c.name}
+											</Button>
+										</DrawerClose>
+									))}
+									<div className="pt-2 border-t border-gray-200">
+										<CreateCategoryDialog type={recordType} onCreated={id => { setCategory(id); setCatOpen(false); }} />
+									</div>
+								</div>
+							</DrawerContent>
+						</Drawer>
 					</section>
 
 					{/* Subcategory selection and add */}
-					<section className="flex w-full overflow-x-auto space-x-2">
+					<section>
 						<ToggleGroup
 							value={subCategory.toString()}
 							onValueChange={(v) => setSubCategory(Number(v))}
 							type="single"
 							variant="outline"
 							size="lg"
-							className="text-sm flex-1"
+							className="flex flex-row flex-wrap gap-2 text-xs"
 						>
+							<CreateSubCategoryDialog categoryId={category} onCreated={(id: number) => setSubCategory(id)} />
 							{(tenant.categories.find(c => c.id === category)?.sub_categories || []).map(sc => (
-								<ToggleGroupItem key={sc.id} value={sc.id.toString()}>
+								<ToggleGroupItem
+									className="flex-grow"
+									key={sc.id} value={sc.id.toString()}
+								>
 									{sc.name}
 								</ToggleGroupItem>
 							))}
 						</ToggleGroup>
-						<CreateSubCategoryDialog categoryId={category} onCreated={(id: number) => setSubCategory(id)} />
 					</section>
 
 					{/* Description optional */}
@@ -180,7 +211,7 @@ export default function AddRecord() {
 
 					<section>
 						<DateTimePicker
-							className="w-full border-none bg-transparent"
+							className="w-full bg-transparent border-none"
 							locale={ar}
 							value={datetime}
 							onChange={(date) => date && setDatetime(date)}
