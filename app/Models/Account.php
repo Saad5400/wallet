@@ -17,6 +17,10 @@ class Account extends Model
         'cashback_rate',
     ];
 
+    protected $casts = [
+        'cashback_rate' => 'float',
+    ];
+
     public function records(): HasMany
     {
         return $this->hasMany(Record::class);

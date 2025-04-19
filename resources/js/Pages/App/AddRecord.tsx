@@ -20,14 +20,18 @@ import { cn } from "@/lib/utils";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { ar } from "react-day-picker/locale";
+import { useAuth } from '@/hooks/useAuth';
+import { PageProps, RecordType, Tenant, User } from "@/types";
 
 export default function AddRecord() {
 
-    const [recordType, setRecordType] = useState<'expense' | 'income' | 'transfer'>('expense');
-    const [amount, setAmount] = useState<number | string>(''); // Changed to string to fix controlled input warning
-    const [account, setAccount] = useState<number>(0);
-    const [category, setCategory] = useState<number>(0);
-    const [subCategory, setSubCategory] = useState<number>(0);
+    const { user, tenant } = useAuth();
+
+    const [recordType, setRecordType] = useState<RecordType>(user.lastRecord?.type || 'expense');
+    const [amount, setAmount] = useState<number | string>('');
+    const [account, setAccount] = useState<number>(user.lastRecord?.account_id || tenant.accounts[0]?.id || -1);
+    const [category, setCategory] = useState<number>(user.lastRecord?.category_id || tenant.categories[0]?.id || -1);
+    const [subCategory, setSubCategory] = useState<number>(user.lastRecord?.sub_category_id || tenant.categories[0]?.sub_categories[0]?.id || -1);
     const [datetime, setDatetime] = useState<Date>(new Date());
 
     return (

@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -30,7 +32,10 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        /** @var User $user */
         $user = $request->user();
+
+        /** @var Tenant $tenant */
         $tenant = tenant();
 
         return [
@@ -40,11 +45,14 @@ class HandleInertiaRequests extends Middleware
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'lastRecord' => $user->records()->latest()->first(),
                 ],
                 'tenant' => is_null($tenant) ? null : [
                     'id' => $tenant->id,
                     'name' => $tenant->name,
                     'month_start_day' => (int) $tenant->month_start_day,
+                    'accounts' => $tenant->accounts()->get(),
+                    'categories' => $tenant->categories()->with('subCategories')->get(),
                 ]
             ],
             'ziggy' => fn () => [

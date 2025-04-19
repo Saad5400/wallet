@@ -25,6 +25,8 @@ class Record extends Model
     ];
 
     protected $casts = [
+        'amount' => 'float',
+        'ignored' => 'boolean',
         'type' => RecordType::class,
     ];
 
