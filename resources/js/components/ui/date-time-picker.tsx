@@ -775,13 +775,12 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
                     <Button
                         variant="outline"
                         className={cn(
-                            'w-full justify-start text-left font-normal',
+                            'w-full justify-between text-left font-normal',
                             !displayDate && 'text-muted-foreground',
                             className,
                         )}
                         ref={buttonRef}
                     >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
                         {displayDate ? (
                             format(
                                 displayDate,
@@ -793,6 +792,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
                         ) : (
                             <span>{placeholder}</span>
                         )}
+                        <CalendarIcon className="size-6" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">

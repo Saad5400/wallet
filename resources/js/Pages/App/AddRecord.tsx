@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { ar } from "react-day-picker/locale";
 
 export default function AddRecord() {
 
@@ -29,10 +31,10 @@ export default function AddRecord() {
     const [datetime, setDatetime] = useState<Date>(new Date());
 
     return (
-        <Drawer defaultOpen={true}>
+        <Drawer>
             <DrawerTrigger asChild>
                 <Button className="rounded-full size-14">
-                    <Icon icon='material-symbols:add-2-rounded' className="size-8" />
+                    <Icon icon='material-symbols:add-2-rounded' className="size-6" />
                 </Button>
             </DrawerTrigger>
             <VisuallyHidden>
@@ -45,7 +47,7 @@ export default function AddRecord() {
                     </DrawerDescription>
                 </DrawerHeader>
             </VisuallyHidden>
-            <DrawerContent asChild className="p-2 bg-card [&>*]:py-4 [&>*]:border-b">
+            <DrawerContent asChild className="p-2 bg-card space-y-2">
                 <form>
                     <ToggleGroup
                         value={recordType}
@@ -82,15 +84,13 @@ export default function AddRecord() {
 
                     <Input
                         dir="ltr"
-                        type="number"
                         placeholder="0.00"
                         value={amount}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setAmount(value === '' ? '' : parseFloat(value));
-                        }}
+                        type="number"
+                        onChange={(e) => setAmount(e.target.value)}
+                        onClick={(e) => e.currentTarget.select()}
                         className={cn(
-                            "bg-transparent border-0 text-5xl text-center w-full !py-12",
+                            "bg-transparent border-0 !text-5xl text-center w-full !py-12",
                             recordType === 'expense' && 'text-destructive',
                             recordType === 'income' && 'text-success',
                             recordType === 'transfer' && 'text-primary'
@@ -103,7 +103,7 @@ export default function AddRecord() {
                             className="flex items-center justify-between w-full"
                         >
                             <span>مدى الراجحي</span>
-                            <Icon icon='material-symbols:credit-card' className="size-8" />
+                            <Icon icon='material-symbols:credit-card' className="size-6" />
                         </Button>
                     </section>
 
@@ -113,7 +113,7 @@ export default function AddRecord() {
                             className="flex items-center justify-between w-full text-primary"
                         >
                             <span className="text-sm">مواصلات</span>
-                            <Icon icon='material-symbols:category' className="size-8" />
+                            <Icon icon='material-symbols:category' className="size-6" />
                         </Button>
                     </section>
 
@@ -168,14 +168,11 @@ export default function AddRecord() {
                     </section>
 
                     <section>
-                        <Input
-                            type="datetime-local"
-                            className="w-full border-none"
-                            value={datetime.toISOString().slice(0, 16)}
-                            onChange={(e) => {
-                                const date = new Date(e.target.value);
-                                setDatetime(date);
-                            }}
+                        <DateTimePicker
+                            className="w-full border-none bg-transparent"
+                            locale={ar}
+                            value={datetime}
+                            onChange={(date) => date && setDatetime(date)}
                         />
                     </section>
 
