@@ -33,14 +33,13 @@ export default function CreateCategoryDialog({ type, onCreated }: CreateCategory
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>إضافة تصنيف</DialogTitle>
-          <DialogDescription>
-            أنشئ تصنيفًا جديدًا {type === 'expense' ? 'للمصروفات' : type === 'income' ? 'للإيرادات' : ''}
-          </DialogDescription>
+          <DialogTitle>
+            إضافة تصنيف {type === 'expense' ? 'للمصروفات' : type === 'income' ? 'للإيرادات' : ''}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">اسم التصنيف</Label>
+            <Label htmlFor="name" className='text-muted'>اسم التصنيف</Label>
             <Input id="name" autoComplete="off" value={data.name} onChange={e => setData('name', e.target.value)} required />
             {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
           </div>

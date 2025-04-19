@@ -9,15 +9,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }):
     return (
         <>
             {isMobile ?
-                <div className="relative h-full w-full flex-grow" id='actual-content'>
+                <div className="relative flex-grow w-full h-screen" id='actual-content'>
                     {children}
                 </div>
                 :
-                <div className='flex justify-center items-center p-16 min-h-screen bg-slate-700'
+                <div className='flex items-center justify-center min-h-screen p-16 bg-slate-700'
                     style={{ viewTransitionName: 'phone-mockup' }}>
                     <AndroidMockup screenWidth={350} className='relative drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)]'
                         statusbarColor='#202020' frameColor='#202020' noRoundedScreen={true}>
-                        <div className="relative h-full w-full flex-grow" id='actual-content'>
+                        <div className="relative flex-grow w-full h-full" id='actual-content'>
                             {children}
                         </div>
                     </AndroidMockup>

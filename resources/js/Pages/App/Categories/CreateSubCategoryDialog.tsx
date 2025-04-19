@@ -45,13 +45,10 @@ export default function CreateSubCategoryDialog({ categoryId, categoryName, onCr
           <DialogTitle>
             {categoryName ? `إضافة تصنيف فرعي لـ ${categoryName}` : 'إضافة تصنيف فرعي'}
           </DialogTitle>
-          <DialogDescription>
-            {categoryName ? `أنشئ تصنيفًا فرعيًا جديدًا تحت ${categoryName}` : 'أنشئ تصنيفًا فرعيًا جديدًا'}
-          </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">اسم التصنيف الفرعي</Label>
+            <Label htmlFor="name" className='text-muted'>اسم التصنيف الفرعي</Label>
             <Input id="name" autoComplete="off" value={data.name} onChange={e => setData('name', e.target.value)} required />
             {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
           </div>

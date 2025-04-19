@@ -68,7 +68,7 @@ export default function RecordItem({ record }: RecordItemProps) {
 			>
 				<div className="flex flex-col">
 					<span className="font-medium">{record.account.name}</span>
-					<div className="text-sm text-muted-foreground">
+					<div className="text-sm text-muted">
 						{record.category && <span>{record.category.name}</span>}
 						{record.subCategory && <span> / {record.subCategory.name}</span>}
 						{record.description && <span> - {record.description}</span>}
@@ -78,7 +78,7 @@ export default function RecordItem({ record }: RecordItemProps) {
 					<span className={cn("font-semibold", getTypeColor(record.type))}>
 						{formatAmount(record.amount, record.type)}
 					</span>
-					<span className="text-xs text-muted-foreground">{formattedDate}</span>
+					<span className="text-xs text-muted">{formattedDate}</span>
 				</div>
 			</div>
 

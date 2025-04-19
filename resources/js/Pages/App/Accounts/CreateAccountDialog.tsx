@@ -39,12 +39,12 @@ export default function CreateAccountDialog({ onCreated }: CreateAccountDialogPr
 				</DialogHeader>
 				<form onSubmit={submit} className="w-full h-full space-y-4">
 					<div className='flex flex-col gap-2 mt-4'>
-						<Label htmlFor="name">اسم الحساب</Label>
+						<Label htmlFor="name" className='text-muted'>اسم الحساب</Label>
 						<Input className='w-full' id="name" autoComplete='off' value={data.name} onChange={e => setData('name', e.target.value)} required />
 						{errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
 					</div>
 					<div className='flex flex-col gap-2'>
-						<Label htmlFor="cashback_rate">
+						<Label htmlFor="cashback_rate" className='text-muted'>
 							نسبة الاسترجاع (Cashback)
 						</Label>
 						<Input

@@ -135,7 +135,7 @@
   }
 
   body {
-    @apply bg-background text-foreground flex flex-col min-h-screen;
+    @apply flex flex-col min-h-screen bg-background text-foreground;
   }
 
   #app {
@@ -160,5 +160,16 @@
 
   h5 {
     @apply text-xl font-bold;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
