@@ -20,5 +20,5 @@ export default function ProgressBar({
 
     router.on('finish', () => progressBar.current?.complete());
 
-    return <LoadingBar ref={progressBar} className="!bg-primary" style={{ viewTransitionName: 'navigation-progress-bar' }} containerStyle={containerStyle} />;
+    return <LoadingBar ref={progressBar} className="!bg-primary" containerStyle={containerStyle} />;
 }

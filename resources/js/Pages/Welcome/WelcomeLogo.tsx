@@ -22,9 +22,7 @@ export default function WelcomeLogo({
             src='/favicon.webp'
             // Combine the default classes with any additional classes provided.
             className={cn('rounded-4xl size-32', className)}
-            // Apply inline styles, setting a viewTransitionName for transition animations,
-            // and merge with any additional styles passed via props.
-            style={{ viewTransitionName: 'welcome-logo', ...style }}
+            style={{ ...style }}
             // Spread any additional props to the underlying img element.
             {...props}
         />

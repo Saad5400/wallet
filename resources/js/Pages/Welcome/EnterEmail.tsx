@@ -54,12 +54,11 @@ function EnterEmail({ email = '' }: { email?: string; }): JSX.Element {
                 {/* Container for the email input field with auto-animation */}
                 <div ref={emailContainer} className='flex flex-col gap-2'>
                     {/* Label for email input */}
-                    <Label htmlFor='email' className='self-start' style={{ viewTransitionName: 'welcome-email-label' }}>
+                    <Label htmlFor='email' className='self-start'>
                         البريد الإلكتروني
                     </Label>
                     {/* Email input field */}
                     <Input
-                        style={{ viewTransitionName: 'welcome-email-input' }}
                         id='email'
                         name='email'
                         type='email'
@@ -81,7 +80,7 @@ function EnterEmail({ email = '' }: { email?: string; }): JSX.Element {
                 {/* Container for action buttons */}
                 <div className='flex flex-col items-start'>
                     {/* Submit button for OTP request */}
-                    <Button size={'wide'} disabled={processing} style={{ viewTransitionName: 'welcome-continue-button' }} data-testid="submit-button">
+                    <Button size={'wide'} disabled={processing} data-testid="submit-button">
                         {processing ? (
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                         ) : (
@@ -92,7 +91,7 @@ function EnterEmail({ email = '' }: { email?: string; }): JSX.Element {
                         )}
                     </Button>
                     {/* Link button to navigate back */}
-                    <Button asChild variant={'link'} style={{ viewTransitionName: 'welcome-back-button' }}>
+                    <Button asChild variant={'link'}>
                         <Link className='flex flex-row items-center gap-2' href={route('welcome.index')}>
                             <Icon icon='line-md:log-out' className='size-4' />
                             الرجوع

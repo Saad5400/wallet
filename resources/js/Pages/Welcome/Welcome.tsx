@@ -36,7 +36,7 @@ function WelcomePage(): JSX.Element {
             <img src='/images/hero.svg' alt='محفظتنا' className='-mt-10 -mb-6' loading='lazy' data-testid="welcome-hero-image" />
 
             {/* Button linking to the email entry page */}
-            <Button asChild size={'wide'} data-testid="welcome-start-button" style={{ viewTransitionName: 'welcome-continue-button' }}>
+            <Button asChild size={'wide'} data-testid="welcome-start-button">
                 <Link href={route('welcome.enterEmail')}>
                     ابدأ الآن
                     {/* Icon for additional visual indication */}

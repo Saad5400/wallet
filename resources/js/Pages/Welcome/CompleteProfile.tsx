@@ -49,18 +49,17 @@ function Page(): JSX.Element {
             <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
                 {/* Informational message */}
-                <p className='text-muted' style={{ viewTransitionName: 'welcome-info' }}>
+                <p className='text-muted'>
                     آخر شيء، نحتاج نكمل معلومات حسابك
                 </p>
                 {/* Container for the name input */}
                 <div ref={nameContainer} className='flex flex-col gap-2'>
                     {/* Label for the name input */}
-                    <Label htmlFor='name' className='self-start' style={{ viewTransitionName: 'welcome-email-label' }}>
+                    <Label htmlFor='name' className='self-start'>
                         الاسم
                     </Label>
                     {/* Name input field */}
                     <Input
-                        style={{ viewTransitionName: 'welcome-email-input' }}
                         id='name'
                         name='name'
                         required
@@ -74,7 +73,7 @@ function Page(): JSX.Element {
                 </div>
                 {/* Container for the submit button */}
                 <div className='flex flex-col items-start'>
-                    <Button size={'wide'} disabled={processing} data-testid="submit-button" style={{ viewTransitionName: 'welcome-continue-button' }}>
+                    <Button size={'wide'} disabled={processing} data-testid="submit-button">
                         {processing ? (
                             <Icon icon='line-md:loading-twotone-loop' className='size-4' />
                         ) : (

@@ -10,7 +10,6 @@ use DateInterval;
 use DatePeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -21,14 +20,6 @@ class HomeController extends Controller
 
         // Resolve start and end dates based on request or tenant defaults
         [$startDate, $endDate] = $this->resolveDateRange($request, $tenant);
-
-        // Store date range in session for persistence
-        if ($request->has('startDate') && $request->has('endDate')) {
-            Session::put('dashboard_period', [
-                'startDate' => $startDate->toISOString(),
-                'endDate' => $endDate->toISOString()
-            ]);
-        }
 
         $income = $tenant->records()
             ->whereBetween('occurred_at', [$startDate, $endDate])
@@ -125,7 +116,7 @@ class HomeController extends Controller
     }
 
     /**
-     * Determines the start and end dates based on the request parameters, session data, or tenant defaults.
+     * Determines the start and end dates based on the request parameters or tenant defaults.
      *
      * @param Request $request
      * @param Tenant $tenant
@@ -139,13 +130,7 @@ class HomeController extends Controller
         if ($startDateParam && $endDateParam) {
             $startDate = Carbon::parse($startDateParam)->startOfDay();
             $endDate = Carbon::parse($endDateParam)->endOfDay();
-        } elseif (Session::has('dashboard_period')) {
-            // Use period from session if available
-            $period = Session::get('dashboard_period');
-            $startDate = Carbon::parse($period['startDate'])->startOfDay();
-            $endDate = Carbon::parse($period['endDate'])->endOfDay();
         } else {
-            // Use tenant default period
             $monthStartDay = $tenant->month_start_day ?? 27;
             $today = Carbon::now();
 

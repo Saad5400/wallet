@@ -68,6 +68,10 @@ function Index({
 					selectedPeriod={selectedPeriod}
 					setSelectedPeriod={setSelectedPeriod}
 					monthStartDay={auth.tenant.month_start_day}
+					defaultPeriod={{
+						startDate: dayjs(defaultPeriod.startDate),
+						endDate: dayjs(defaultPeriod.endDate)
+					}}
 				/>
 			</header>
 			<main className="space-y-4">

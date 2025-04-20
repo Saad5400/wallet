@@ -13,8 +13,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }):
                     {children}
                 </div>
                 :
-                <div className='flex items-center justify-center min-h-screen p-16 bg-slate-700'
-                    style={{ viewTransitionName: 'phone-mockup' }}>
+                <div className='flex items-center justify-center min-h-screen p-16 bg-slate-700'>
                     <AndroidMockup screenWidth={350} className='relative drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)]'
                         statusbarColor='#202020' frameColor='#202020' noRoundedScreen={true}>
                         <div className="relative flex-grow w-full h-full" id='actual-content'>

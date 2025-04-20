@@ -56,17 +56,17 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
             <WelcomeLogo className='mb-20' />
             <form className='contents' onSubmit={submit}>
                 {/* Inform the user that the OTP has been sent */}
-                <p className='text-muted' style={{ viewTransitionName: 'welcome-info' }}>
+                <p className='text-muted'>
                     تم إرسال رمز التحقق إلى <span className='text-foreground'>{email}</span>
                 </p>
                 {/* OTP input container with auto-animate */}
                 <div ref={otpContainer} className='flex flex-col gap-2'>
                     {/* Label for the OTP input */}
-                    <Label htmlFor='otp' className='self-start' style={{ viewTransitionName: 'welcome-email-label' }}>
+                    <Label htmlFor='otp' className='self-start'>
                         رمز التحقق
                     </Label>
                     {/* Container for OTP input groups and slots */}
-                    <div dir='ltr' className='w-80' style={{ viewTransitionName: 'welcome-email-input' }}>
+                    <div dir='ltr' className='w-80'>
                         <InputOTP
                             className='w-full'
                             maxLength={6}
@@ -110,7 +110,6 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
                         size={'wide'}
                         disabled={processing}
                         data-testid="otp-submit-button"
-                        style={{ viewTransitionName: 'welcome-continue-button' }}
                         ref={submitButton}
                     >
                         {processing ? (
@@ -124,7 +123,7 @@ function EnterOtp({ email = '' }: { email?: string; }): JSX.Element {
                     </Button>
                     {/* Button to navigate back to email entry for editing */}
                     <Button asChild variant={'link'}>
-                        <Link className='flex flex-row items-center gap-2' href={route('welcome.enterEmail')} style={{ viewTransitionName: 'welcome-back-button' }}>
+                        <Link className='flex flex-row items-center gap-2' href={route('welcome.enterEmail')}>
                             <Icon icon='line-md:log-out' className='size-4' />
                             تعديل البريد الإلكتروني
                         </Link>
