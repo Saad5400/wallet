@@ -1,11 +1,12 @@
 import AppLayout from "./AppLayout";
 import { PageProps, Period, Record } from "@/types";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PeriodSelector from "./PeriodSelector";
 import { MoneyCard } from "@/components/MoneyCard";
 import dayjs from "dayjs";
 import TopExpenseCategoriesChart from "./Categories/TopExpenseCategoriesChart";
 import LatestRecords from "./Records/LatestRecords";
+import { router } from '@inertiajs/react';
 
 interface AmountWithChart {
 	value: number;
@@ -55,10 +56,33 @@ function Index({
 	expenseCategories,
 	latestRecords,
 }: IndexProps) {
-	const [selectedPeriod, setSelectedPeriod] = useState<Period>({
-		startDate: dayjs(defaultPeriod.startDate),
-		endDate: dayjs(defaultPeriod.endDate),
+	// Initialize period from URL parameters or default period
+	const [selectedPeriod, setSelectedPeriod] = useState<Period>(() => {
+		const searchParams = new URLSearchParams(window.location.search);
+		const startDateParam = searchParams.get('startDate');
+		const endDateParam = searchParams.get('endDate');
+		
+		// If URL has valid date parameters, use them; otherwise use default
+		if (startDateParam && endDateParam) {
+			return {
+				startDate: dayjs(startDateParam),
+				endDate: dayjs(endDateParam)
+			};
+		}
+		
+		return {
+			startDate: dayjs(defaultPeriod.startDate),
+			endDate: dayjs(defaultPeriod.endDate)
+		};
 	});
+
+	// Update data when period changes
+	const handlePeriodChange = (newPeriod: Period) => {
+		setSelectedPeriod(newPeriod);
+		
+		// The URL update is handled in the PeriodSelector component now
+		// The backend will fetch new data when the page refreshes with new parameters
+	};
 
 	return (
 		<div className="space-y-4">
@@ -66,7 +90,7 @@ function Index({
 				<h5>هلا {auth.user.name}</h5>
 				<PeriodSelector
 					selectedPeriod={selectedPeriod}
-					setSelectedPeriod={setSelectedPeriod}
+					setSelectedPeriod={handlePeriodChange}
 					monthStartDay={auth.tenant.month_start_day}
 					defaultPeriod={{
 						startDate: dayjs(defaultPeriod.startDate),

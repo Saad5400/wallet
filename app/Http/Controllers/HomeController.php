@@ -11,6 +11,7 @@ use DatePeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -19,8 +20,56 @@ class HomeController extends Controller
         $tenant = tenant();
 
         // Resolve start and end dates based on request or tenant defaults
-        [$startDate, $endDate] = $this->resolveDateRange($request, $tenant);
+        [$startDate, $endDate, $isDefaultPeriod] = $this->resolveDateRange($request, $tenant);
 
+        // Get financial data for the selected period
+        $financialData = $this->getFinancialData($tenant, $startDate, $endDate);
+
+        // Get latest 10 records with account, category, and subcategory info
+        $latestRecords = $tenant->records()
+            ->with(['account', 'category', 'subCategory'])
+            ->orderBy('occurred_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Get expense categories data with subcategories
+        $expenseCategories = $this->getExpenseCategories($tenant, $startDate, $endDate);
+
+        // Generate chart data for the selected period
+        [$balanceChartData, $incomeChartData, $expenseChartData] = $this->generateChartData($tenant, $startDate, $endDate);
+
+        return Inertia::render('App/Index', [
+            'balance' => [
+                'value' => $financialData['balance'],
+                'chartData' => $balanceChartData,
+            ],
+            'income' => [
+                'value' => $financialData['income'],
+                'chartData' => $incomeChartData,
+            ],
+            'expense' => [
+                'value' => $financialData['expense'],
+                'chartData' => $expenseChartData,
+            ],
+            'defaultPeriod' => [
+                'startDate' => $this->getDefaultStartDate($tenant)->toISOString(),
+                'endDate' => $this->getDefaultEndDate($tenant)->toISOString(),
+            ],
+            'expenseCategories' => $expenseCategories,
+            'latestRecords' => $latestRecords,
+        ]);
+    }
+
+    /**
+     * Get financial data (income, expense, balance) for a specific period.
+     *
+     * @param Tenant $tenant
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return array
+     */
+    private function getFinancialData(Tenant $tenant, Carbon $startDate, Carbon $endDate): array
+    {
         $income = $tenant->records()
             ->whereBetween('occurred_at', [$startDate, $endDate])
             ->where('type', RecordType::income)
@@ -33,18 +82,100 @@ class HomeController extends Controller
 
         $balance = $income - $expense;
 
-        // Get latest 10 records with account, category, and subcategory info
-        $latestRecords = $tenant->records()
-            ->with(['account', 'category', 'subCategory'])
-            ->orderBy('occurred_at', 'desc')
-            ->limit(10)
-            ->get();
+        return [
+            'income' => $income,
+            'expense' => $expense,
+            'balance' => $balance,
+        ];
+    }
 
+    /**
+     * Determines the start and end dates based on the request parameters or tenant defaults.
+     * Returns whether the selected period is the default period.
+     *
+     * @param Request $request
+     * @param Tenant $tenant
+     * @return array [startDate, endDate, isDefaultPeriod]
+     */
+    private function resolveDateRange(Request $request, Tenant $tenant): array
+    {
+        $startDateParam = $request->get('startDate');
+        $endDateParam = $request->get('endDate');
+
+        $isDefaultPeriod = !($startDateParam && $endDateParam);
+
+        if ($startDateParam && $endDateParam) {
+            try {
+                $startDate = Carbon::parse($startDateParam)->startOfDay();
+                $endDate = Carbon::parse($endDateParam)->endOfDay();
+                
+                // Validate dates
+                if ($startDate->greaterThan($endDate)) {
+                    Log::warning('Invalid date range provided. Start date is after end date.', [
+                        'startDate' => $startDateParam,
+                        'endDate' => $endDateParam,
+                    ]);
+                    return [$this->getDefaultStartDate($tenant), $this->getDefaultEndDate($tenant), true];
+                }
+                
+                return [$startDate, $endDate, false];
+            } catch (\Exception $e) {
+                Log::error('Error parsing date parameters', [
+                    'startDate' => $startDateParam,
+                    'endDate' => $endDateParam,
+                    'error' => $e->getMessage(),
+                ]);
+                return [$this->getDefaultStartDate($tenant), $this->getDefaultEndDate($tenant), true];
+            }
+        }
+
+        return [$this->getDefaultStartDate($tenant), $this->getDefaultEndDate($tenant), true];
+    }
+    
+    /**
+     * Get default start date based on tenant's month start day.
+     *
+     * @param Tenant $tenant
+     * @return Carbon
+     */
+    private function getDefaultStartDate(Tenant $tenant): Carbon
+    {
+        $monthStartDay = $tenant->month_start_day ?? 27;
+        $today = Carbon::now();
+
+        if ($today->day < $monthStartDay) {
+            return $today->copy()->subMonth()->day($monthStartDay)->startOfDay();
+        }
+        
+        return $today->copy()->day($monthStartDay)->startOfDay();
+    }
+    
+    /**
+     * Get default end date based on tenant's month start day.
+     *
+     * @param Tenant $tenant
+     * @return Carbon
+     */
+    private function getDefaultEndDate(Tenant $tenant): Carbon
+    {
+        return $this->getDefaultStartDate($tenant)->copy()->addMonth()->subSecond();
+    }
+
+    /**
+     * Get expense categories with their subcategories for a given period.
+     * 
+     * @param Tenant $tenant
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getExpenseCategories(Tenant $tenant, Carbon $startDate, Carbon $endDate)
+    {
         // Cache key for expense categories data with subcategories
         $cacheKey = "tenant:{$tenant->id}:expenseCategoriesWithSubs:{$startDate->toDateString()}:{$endDate->toDateString()}";
 
         // Try to get data from cache first
-        $expenseCategories = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($tenant, $startDate, $endDate) {
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($tenant, $startDate, $endDate) {
             // Get top expense categories
             return Category::where('tenant_id', $tenant->id)
                 ->where('type', RecordType::expense)
@@ -89,62 +220,16 @@ class HomeController extends Controller
                     ];
                 });
         });
-
-        // Generate chart data for a 30-day period ending at $endDate
-        [$balanceChartData, $incomeChartData, $expenseChartData] = $this->generateChartData($tenant, $startDate, $endDate);
-
-        return Inertia::render('App/Index', [
-            'balance' => [
-                'value' => $balance,
-                'chartData' => $balanceChartData,
-            ],
-            'income' => [
-                'value' => $income,
-                'chartData' => $incomeChartData,
-            ],
-            'expense' => [
-                'value' => $expense,
-                'chartData' => $expenseChartData,
-            ],
-            'defaultPeriod' => [
-                'startDate' => $startDate->toISOString(),
-                'endDate' => $endDate->toISOString(),
-            ],
-            'expenseCategories' => $expenseCategories,
-            'latestRecords' => $latestRecords,
-        ]);
     }
 
     /**
-     * Determines the start and end dates based on the request parameters or tenant defaults.
-     *
-     * @param Request $request
+     * Generate chart data for balance, income and expense over time.
+     * 
      * @param Tenant $tenant
-     * @return array [startDate, endDate]
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return array
      */
-    private function resolveDateRange(Request $request, Tenant $tenant): array
-    {
-        $startDateParam = $request->get('startDate');
-        $endDateParam = $request->get('endDate');
-
-        if ($startDateParam && $endDateParam) {
-            $startDate = Carbon::parse($startDateParam)->startOfDay();
-            $endDate = Carbon::parse($endDateParam)->endOfDay();
-        } else {
-            $monthStartDay = $tenant->month_start_day ?? 27;
-            $today = Carbon::now();
-
-            if ($today->day < $monthStartDay) {
-                $startDate = $today->copy()->subMonth()->day($monthStartDay)->startOfDay();
-            } else {
-                $startDate = $today->copy()->day($monthStartDay)->startOfDay();
-            }
-            $endDate = $startDate->copy()->addMonth()->subSecond();
-        }
-
-        return [$startDate, $endDate];
-    }
-
     private function generateChartData(Tenant $tenant, Carbon $startDate, Carbon $endDate): array
     {
         // Cache key for chart data
