@@ -10,6 +10,7 @@ use DateInterval;
 use DatePeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -21,10 +22,13 @@ class HomeController extends Controller
         // Resolve start and end dates based on request or tenant defaults
         [$startDate, $endDate] = $this->resolveDateRange($request, $tenant);
 
-        // Compute overall totals
-        $balance = $tenant->records()
-            ->where('occurred_at', '<=', $endDate)
-            ->sum('amount');
+        // Store date range in session for persistence
+        if ($request->has('startDate') && $request->has('endDate')) {
+            Session::put('dashboard_period', [
+                'startDate' => $startDate->toISOString(),
+                'endDate' => $endDate->toISOString()
+            ]);
+        }
 
         $income = $tenant->records()
             ->whereBetween('occurred_at', [$startDate, $endDate])
@@ -35,7 +39,9 @@ class HomeController extends Controller
             ->whereBetween('occurred_at', [$startDate, $endDate])
             ->where('type', RecordType::expense)
             ->sum('amount');
-            
+
+        $balance = $income - $expense;
+
         // Get latest 10 records with account, category, and subcategory info
         $latestRecords = $tenant->records()
             ->with(['account', 'category', 'subCategory'])
@@ -45,7 +51,7 @@ class HomeController extends Controller
 
         // Cache key for expense categories data with subcategories
         $cacheKey = "tenant:{$tenant->id}:expenseCategoriesWithSubs:{$startDate->toDateString()}:{$endDate->toDateString()}";
-        
+
         // Try to get data from cache first
         $expenseCategories = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($tenant, $startDate, $endDate) {
             // Get top expense categories
@@ -54,11 +60,11 @@ class HomeController extends Controller
                 ->has('records')
                 ->withSum(['records as total' => function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('occurred_at', [$startDate, $endDate])
-                          ->where('type', RecordType::expense);
+                        ->where('type', RecordType::expense);
                 }], 'amount')
                 ->with(['subCategories' => function ($query) {
                     $query->withSum('records', 'amount')
-                          ->orderByDesc('records_sum_amount');
+                        ->orderByDesc('records_sum_amount');
                 }])
                 ->orderByDesc('total')
                 ->limit(6)
@@ -72,7 +78,7 @@ class HomeController extends Controller
                                 ->whereBetween('occurred_at', [$startDate, $endDate])
                                 ->where('type', RecordType::expense)
                                 ->sum('amount');
-                            
+
                             return [
                                 'id' => $subCategory->id,
                                 'name' => $subCategory->name,
@@ -83,7 +89,7 @@ class HomeController extends Controller
                             return $subCategory['total'] > 0; // Only include subcategories with expenses
                         })
                         ->values();
-                    
+
                     return [
                         'id' => $category->id,
                         'name' => $category->name,
@@ -93,7 +99,7 @@ class HomeController extends Controller
                 });
         });
 
-        // Generate cumulative chart data for a 30-day period ending at $endDate
+        // Generate chart data for a 30-day period ending at $endDate
         [$balanceChartData, $incomeChartData, $expenseChartData] = $this->generateChartData($tenant, $startDate, $endDate);
 
         return Inertia::render('App/Index', [
@@ -119,7 +125,7 @@ class HomeController extends Controller
     }
 
     /**
-     * Determines the start and end dates based on the request parameters or tenant defaults.
+     * Determines the start and end dates based on the request parameters, session data, or tenant defaults.
      *
      * @param Request $request
      * @param Tenant $tenant
@@ -133,7 +139,13 @@ class HomeController extends Controller
         if ($startDateParam && $endDateParam) {
             $startDate = Carbon::parse($startDateParam)->startOfDay();
             $endDate = Carbon::parse($endDateParam)->endOfDay();
+        } elseif (Session::has('dashboard_period')) {
+            // Use period from session if available
+            $period = Session::get('dashboard_period');
+            $startDate = Carbon::parse($period['startDate'])->startOfDay();
+            $endDate = Carbon::parse($period['endDate'])->endOfDay();
         } else {
+            // Use tenant default period
             $monthStartDay = $tenant->month_start_day ?? 27;
             $today = Carbon::now();
 
@@ -150,14 +162,11 @@ class HomeController extends Controller
 
     private function generateChartData(Tenant $tenant, Carbon $startDate, Carbon $endDate): array
     {
-        // Try to load from cache first
-        $balanceChartData = Cache::get("tenant:{$tenant->id}:balanceChartData");
-        $incomeChartData = Cache::get("tenant:{$tenant->id}:incomeChartData");
-        $expenseChartData = Cache::get("tenant:{$tenant->id}:expenseChartData");
+        // Cache key for chart data
+        $cacheKey = "tenant:{$tenant->id}:chartData:{$startDate->toDateString()}:{$endDate->toDateString()}";
 
-        if ($balanceChartData && $incomeChartData && $expenseChartData) {
-            // ✅ Cached data found, return it directly
-            return [$balanceChartData, $incomeChartData, $expenseChartData];
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
         }
 
         $daysCount = $startDate->diffInDays($endDate);
@@ -181,9 +190,16 @@ class HomeController extends Controller
 
             $balanceChartData[] = [
                 'month' => $date->toDateString(),
-                'balance' => $tenant->records()
-                    ->where('occurred_at', '<=', $date->copy()->endOfDay())
-                    ->sum('amount'),
+                'balance' =>
+                    $tenant->records()
+                        ->where('occurred_at', '<=', $date->copy()->endOfDay())
+                        ->where('type', RecordType::income)
+                        ->sum('amount')
+                    -
+                    $tenant->records()
+                        ->where('occurred_at', '<=', $date->copy()->endOfDay())
+                        ->where('type', RecordType::expense)
+                        ->sum('amount')
             ];
 
             $incomeChartData[] = [
@@ -203,10 +219,11 @@ class HomeController extends Controller
             ];
         }
 
-        Cache::put("tenant:{$tenant->id}:balanceChartData", $balanceChartData, now()->addHour());
-        Cache::put("tenant:{$tenant->id}:incomeChartData", $incomeChartData, now()->addHour());
-        Cache::put("tenant:{$tenant->id}:expenseChartData", $expenseChartData, now()->addHour());
+        $result = [$balanceChartData, $incomeChartData, $expenseChartData];
 
-        return [$balanceChartData, $incomeChartData, $expenseChartData];
+        // Cache results for one hour
+        Cache::put($cacheKey, $result, now()->addHour());
+
+        return $result;
     }
 }
